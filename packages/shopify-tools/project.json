@@ -1,0 +1,38 @@
+{
+  "name": "shopify-tools",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/shopify-tools/src",
+  "projectType": "library",
+  "targets": {
+    "generate": {
+      "executor": "nx:run-commands",
+      "outputs": ["packages/shopify-tools/src/types/graphql.generated.ts"],
+      "options": {
+        "command": "npx graphql-codegen --config packages/shopify-tools/codegen.ts"
+      }
+    },
+    "build": {
+      "dependsOn": ["^generate"],
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/shopify-tools",
+        "main": "packages/shopify-tools/src/index.ts",
+        "tsConfig": "packages/shopify-tools/tsconfig.lib.json",
+        "assets": ["packages/shopify-tools/*.md"]
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs shopify-tools {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/shopify-tools/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}
