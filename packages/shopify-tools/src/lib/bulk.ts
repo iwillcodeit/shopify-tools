@@ -21,7 +21,7 @@ const debug = Debug('shopify-tools:bulk');
 export async function waitBulkOperation(client: AdminApiClient, bulkOperation: BulkOperationFragment) {
   // Check status with pooling
   while (bulkOperation.status === BulkOperationStatus.Running || bulkOperation.status === BulkOperationStatus.Created) {
-    sleep(5000); // Wait 5s
+    await sleep(5000); // Wait 5s
     debug(`Fetching operation status`);
 
     const statusRes = await client.query<GetBulkStatusQuery, GetBulkStatusQueryVariables>({
