@@ -49,7 +49,7 @@ export async function batchMutation<
     Math.ceil(values.length / batchSize)
   );
   for (let i = 0; i < values.length; i += batchSize) {
-    debug('Mutating batch n°%d', i + 1);
+    debug('Mutating batch n°%d', i / batchSize + 1);
     mutationDef.name = {
       kind: Kind.NAME,
       value: `${name}_${i / batchSize + 1}`,
