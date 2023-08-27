@@ -10,10 +10,17 @@ import { sleep } from '../utils/index.js';
 import Debug from 'debug';
 const debug = Debug('shopify-tools:batch');
 
+export interface BatchParams {
+  batchSize: number;
+  waitTime: number;
+}
+
 export async function batchMutation<
   T extends Record<string, unknown>,
   V extends Record<string, unknown> = Record<string, unknown>
->(client: AdminApiClient, mutationStr: string, values: V[], batchSize = 10): Promise<Batched<T>> {
+>(client: AdminApiClient, mutationStr: string, values: V[], params: Partial<BatchParams>): Promise<Batched<T>> {
+  const { batchSize = 10, waitTime = 1250 } = params ?? {};
+
   const query = gql(mutationStr) as DeepMutable<DocumentNode>;
 
   if (query.kind !== Kind.DOCUMENT) throw new Error('Query definition is missing');
@@ -27,15 +34,25 @@ export async function batchMutation<
   if (mutationDef.selectionSet.selections.length > 1) throw new Error('You can only select one mutation at a time');
   if (mutationDef.selectionSet.selections[0]?.kind !== Kind.FIELD) throw new Error('The selection must be a field');
 
+  const name = mutationDef.name?.value ?? 'batch';
   const mutationVariables = structuredClone(mutationDef.variableDefinitions);
   const mutationSelection = structuredClone(mutationDef.selectionSet.selections[0]);
 
   let responses = {} as Batched<T>;
 
+  debug(
+    'Executing %s in batch. %d inputs to mutate. (batchSize=%d,waitTime=%dms). Splitting into %d batches',
+    name,
+    values.length,
+    batchSize,
+    waitTime,
+    Math.ceil(values.length / batchSize)
+  );
   for (let i = 0; i < values.length; i += batchSize) {
+    debug('Mutating batch n°%d', i + 1);
     mutationDef.name = {
       kind: Kind.NAME,
-      value: `UpdateUnexportedOrder_${i / batchSize}`,
+      value: `${name}_${i / batchSize + 1}`,
     };
     mutationDef.variableDefinitions = [];
     mutationDef.selectionSet.selections = [];
@@ -86,7 +103,7 @@ export async function batchMutation<
       ...res,
     };
 
-    await sleep(1000);
+    await sleep(waitTime);
   }
 
   return responses;
