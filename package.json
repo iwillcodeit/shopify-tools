@@ -13,6 +13,7 @@
     "debug": "^4.3.4",
     "graphql": "^16.7.1",
     "graphql-tag": "^2.12.6",
+    "nanoid": "^5.0.2",
     "tslib": "^2.6.1"
   },
   "devDependencies": {

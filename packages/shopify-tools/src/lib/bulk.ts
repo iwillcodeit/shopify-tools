@@ -15,8 +15,44 @@ import { sleep } from '../utils/index.js';
 import { fetchStreamToFile } from '../utils/bulk/download.js';
 import { AdminApiClient } from './AdminApiClient.js';
 
+import { nanoid } from 'nanoid';
 import Debug from 'debug';
+import { createInterface } from 'readline';
+import { createReadStream } from 'fs';
+import { unlinkMaybe } from '../utils/fs.js';
 const debug = Debug('shopify-tools:bulk');
+
+export async function* bulkQuery<T>(client: AdminApiClient, query: string) {
+  const operationId = nanoid();
+
+  const operationPath = `/tmp/bulk-${operationId}.jsonl`;
+
+  debug.extend('bulk')('Executing bulk %s', operationId);
+
+  try {
+    const result = await runBulkQuery(client, query, operationPath);
+
+    debug.extend('bulk')('Executing bulk %s', operationId);
+
+    if (Number(result.rootObjectCount) === 0) {
+      return;
+    }
+    if (!result.url) {
+      return;
+    }
+
+    const rl = createInterface({
+      input: createReadStream(operationPath),
+      crlfDelay: Infinity,
+    });
+
+    for await (const line of rl) {
+      yield JSON.parse(line) as T;
+    }
+  } finally {
+    unlinkMaybe(operationPath).catch(console.error);
+  }
+}
 
 export async function waitBulkOperation(client: AdminApiClient, bulkOperation: BulkOperationFragment) {
   // Check status with pooling
