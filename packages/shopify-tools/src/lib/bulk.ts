@@ -20,6 +20,7 @@ import Debug from 'debug';
 import { createInterface } from 'readline';
 import { createReadStream } from 'fs';
 import { unlinkMaybe } from '../utils/fs.js';
+import { EmptyBulkError } from '../errors/EmptyObjectError.js';
 const debug = Debug('shopify-tools:bulk');
 
 export async function* bulkQuery<T>(client: AdminApiClient, query: string) {
@@ -27,18 +28,18 @@ export async function* bulkQuery<T>(client: AdminApiClient, query: string) {
 
   const operationPath = `/tmp/bulk-${operationId}.jsonl`;
 
-  debug.extend('bulk')('Executing bulk %s', operationId);
+  debug('Executing bulk %s', operationId);
 
   try {
     const result = await runBulkQuery(client, query, operationPath);
 
-    debug.extend('bulk')('Executing bulk %s', operationId);
+    debug('Executing bulk %s', operationId);
 
     if (Number(result.rootObjectCount) === 0) {
-      return;
+      throw new EmptyBulkError(result);
     }
     if (!result.url) {
-      return;
+      throw new EmptyBulkError(result);
     }
 
     const rl = createInterface({
