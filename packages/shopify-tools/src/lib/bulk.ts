@@ -20,7 +20,7 @@ import Debug from 'debug';
 import { createInterface } from 'readline';
 import { createReadStream } from 'fs';
 import { unlinkMaybe } from '../utils/fs.js';
-import { EmptyBulkError } from '../errors/EmptyObjectError.js';
+import { BulkError, EmptyBulkError } from '../errors/EmptyObjectError.js';
 const debug = Debug('shopify-tools:bulk');
 
 export async function* bulkQuery<T>(client: AdminApiClient, query: string) {
@@ -77,7 +77,10 @@ export async function waitBulkOperation(client: AdminApiClient, bulkOperation: B
 
   // Handle non success status
   if (bulkOperation.status !== BulkOperationStatus.Completed) {
-    throw new Error(`Bulk operation failed with status ${bulkOperation.status} (code: ${bulkOperation.errorCode})`);
+    throw new BulkError(
+      bulkOperation,
+      `Bulk operation failed with status ${bulkOperation.status} (code: ${bulkOperation.errorCode})`
+    );
   }
 
   return bulkOperation;
