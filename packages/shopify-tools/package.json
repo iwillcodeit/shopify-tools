@@ -1,7 +1,6 @@
 {
   "name": "@iwci/shopify-tools",
-  "version": "1.4.0",
-  "type": "module",
+  "version": "1.4.1",
   "peerDependencies": {
     "@shopify/shopify-api": ">=7.0.0"
   }
