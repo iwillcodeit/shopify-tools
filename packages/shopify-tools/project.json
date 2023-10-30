@@ -11,15 +11,36 @@
         "command": "npx graphql-codegen --config packages/shopify-tools/codegen.ts"
       }
     },
+
     "build": {
-      "dependsOn": ["^generate"],
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/rollup:rollup",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/packages/shopify-tools",
         "main": "packages/shopify-tools/src/index.ts",
+        "outputPath": "dist/packages/shopify-tools",
         "tsConfig": "packages/shopify-tools/tsconfig.lib.json",
-        "assets": ["packages/shopify-tools/*.md"]
+        "compiler": "swc",
+        "project": "packages/shopify-tools/package.json",
+        "format": ["esm", "cjs"],
+        "external": "all",
+        "generateExportsField": true,
+        "assets": [
+          {
+            "glob": "packages/shopify-tools/README.md",
+            "input": ".",
+            "output": "."
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
       }
     },
     "publish": {
