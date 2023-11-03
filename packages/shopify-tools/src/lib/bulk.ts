@@ -24,38 +24,6 @@ import { BulkError, EmptyBulkError } from '../errors/EmptyObjectError.js';
 import { Writable } from 'stream';
 const debug = Debug('shopify-tools:bulk');
 
-export async function* bulkQuery<T>(client: AdminApiClient, query: string) {
-  const operationId = nanoid();
-
-  const operationPath = `/tmp/bulk-${operationId}.jsonl`;
-
-  debug('Executing bulk %s', operationId);
-
-  try {
-    const result = await runBulkQuery(client, query, operationPath);
-
-    debug('Executing bulk %s', operationId);
-
-    if (Number(result.rootObjectCount) === 0) {
-      throw new EmptyBulkError(result);
-    }
-    if (!result.url) {
-      throw new EmptyBulkError(result);
-    }
-
-    const rl = createInterface({
-      input: createReadStream(operationPath),
-      crlfDelay: Infinity,
-    });
-
-    for await (const line of rl) {
-      yield JSON.parse(line) as T;
-    }
-  } finally {
-    unlinkMaybe(operationPath).catch(console.error);
-  }
-}
-
 export async function waitBulkOperation(client: AdminApiClient, bulkOperation: BulkOperationFragment) {
   // Check status with pooling
   while (bulkOperation.status === BulkOperationStatus.Running || bulkOperation.status === BulkOperationStatus.Created) {
@@ -128,6 +96,38 @@ export async function runBulkQuery(client: AdminApiClient, query: string, output
     debug(`No output found, not waiting for completion.`);
 
     return bulkOperationRunQuery.bulkOperation;
+  }
+}
+
+export async function* bulkQuery<T>(client: AdminApiClient, query: string) {
+  const operationId = nanoid();
+
+  const operationPath = `/tmp/bulk-${operationId}.jsonl`;
+
+  debug('Executing bulk %s', operationId);
+
+  try {
+    const result = await runBulkQuery(client, query, operationPath);
+
+    debug('Executing bulk %s', operationId);
+
+    if (Number(result.rootObjectCount) === 0) {
+      throw new EmptyBulkError(result);
+    }
+    if (!result.url) {
+      throw new EmptyBulkError(result);
+    }
+
+    const rl = createInterface({
+      input: createReadStream(operationPath),
+      crlfDelay: Infinity,
+    });
+
+    for await (const line of rl) {
+      yield JSON.parse(line) as T;
+    }
+  } finally {
+    unlinkMaybe(operationPath).catch(console.error);
   }
 }
 
@@ -228,6 +228,42 @@ export async function runBulkMutation<T = Record<string, unknown>>(
     debug(`No output found, not waiting for completion.`);
 
     return bulkOperationRunMutation.bulkOperation;
+  }
+}
+
+export async function* bulkMutate<V = Record<string, unknown>, T = unknown>(
+  client: AdminApiClient,
+  mutation: string,
+  variables: V[]
+) {
+  const operationId = nanoid();
+
+  const operationPath = `/tmp/bulk-${operationId}.jsonl`;
+
+  debug('Executing bulk %s', operationId);
+
+  try {
+    const result = await runBulkMutation(client, mutation, variables, operationPath);
+
+    debug('Executing bulk %s', operationId);
+
+    if (Number(result.rootObjectCount) === 0) {
+      throw new EmptyBulkError(result);
+    }
+    if (!result.url) {
+      throw new EmptyBulkError(result);
+    }
+
+    const rl = createInterface({
+      input: createReadStream(operationPath),
+      crlfDelay: Infinity,
+    });
+
+    for await (const line of rl) {
+      yield JSON.parse(line) as T;
+    }
+  } finally {
+    unlinkMaybe(operationPath).catch(console.error);
   }
 }
 
