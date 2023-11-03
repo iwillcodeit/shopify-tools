@@ -10,3 +10,9 @@ export * from './errors/EmptyObjectError.js';
 export * from './types/api.js';
 export * from './types/webhooksHandler.js';
 export * from './types/webhooks/index.js';
+export {
+  WebhookSubscriptionTopic,
+  BulkOperationFragment,
+  BulkOperationStatus,
+  BulkOperationErrorCode,
+} from './types/graphql.js';
