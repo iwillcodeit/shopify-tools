@@ -1,6 +1,6 @@
 {
   "name": "@iwci/shopify-tools",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "optionalDependencies": {
     "@shopify/shopify-app-express": ">=2.0.0"
   },
