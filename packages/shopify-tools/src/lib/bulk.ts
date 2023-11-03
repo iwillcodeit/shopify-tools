@@ -21,6 +21,7 @@ import { createInterface } from 'readline';
 import { createReadStream } from 'fs';
 import { unlinkMaybe } from '../utils/fs.js';
 import { BulkError, EmptyBulkError } from '../errors/EmptyObjectError.js';
+import { Writable } from 'stream';
 const debug = Debug('shopify-tools:bulk');
 
 export async function* bulkQuery<T>(client: AdminApiClient, query: string) {
@@ -86,7 +87,7 @@ export async function waitBulkOperation(client: AdminApiClient, bulkOperation: B
   return bulkOperation;
 }
 
-export async function runBulkQuery(client: AdminApiClient, query: string, outputPath: string) {
+export async function runBulkQuery(client: AdminApiClient, query: string, output: string | Writable | null) {
   // Start bulk operation
 
   debug(`Creating new bulk query.`);
@@ -111,23 +112,30 @@ export async function runBulkQuery(client: AdminApiClient, query: string, output
 
   debug(`Created operation.`);
 
-  const bulkOperation = await waitBulkOperation(client, bulkOperationRunQuery.bulkOperation);
-  debug(`Bulk operation completed.`);
+  if (output) {
+    debug(`Waiting completion...`);
+    const bulkOperation = await waitBulkOperation(client, bulkOperationRunQuery.bulkOperation);
+    debug(`Bulk operation completed.`);
 
-  if (bulkOperation.url) {
-    debug(`Download URL found. Downloading...`);
-    await fetchStreamToFile(bulkOperation.url, outputPath);
-    debug(`Downloaded bulk operation output...`);
+    if (bulkOperation.url) {
+      debug(`Download URL found. Downloading...`);
+      await fetchStreamToFile(bulkOperation.url, output);
+      debug(`Downloaded bulk operation output...`);
+    }
+
+    return bulkOperation;
+  } else {
+    debug(`No output found, not waiting for completion.`);
+
+    return bulkOperationRunQuery.bulkOperation;
   }
-
-  return bulkOperation;
 }
 
 export async function runBulkMutation<T = Record<string, unknown>>(
   client: AdminApiClient,
   mutation: string,
   variables: T[],
-  outputPath: string
+  output: string | Writable | null
 ) {
   // Initialize bulk variables upload
   debug(`Creating new bulk mutation. Creating variable upload`);
@@ -202,19 +210,25 @@ export async function runBulkMutation<T = Record<string, unknown>>(
     throw new Error('Failed to execute bulk operation: bulk operation is missing');
   }
 
-  debug(`Created bulk operation. Waiting completion...`);
+  debug(`Created bulk operation.`);
 
-  const bulkOperation = await waitBulkOperation(client, bulkOperationRunMutation.bulkOperation);
+  if (output) {
+    debug(`Waiting completion...`);
+    const bulkOperation = await waitBulkOperation(client, bulkOperationRunMutation.bulkOperation);
+    debug(`Bulk operation completed.`);
 
-  debug(`Bulk operation completed.`);
+    if (bulkOperation.url) {
+      debug(`Download URL found. Downloading...`);
+      await fetchStreamToFile(bulkOperation.url, output);
+      debug(`Downloaded bulk operation output...`);
+    }
 
-  if (bulkOperation.url) {
-    debug(`Download URL found. Downloading...`);
-    await fetchStreamToFile(bulkOperation.url, outputPath);
-    debug(`Downloaded bulk operation output...`);
+    return bulkOperation;
+  } else {
+    debug(`No output found, not waiting for completion.`);
+
+    return bulkOperationRunMutation.bulkOperation;
   }
-
-  return bulkOperation;
 }
 
 const BULK_OPERATION_FRAGMENT = /* GraphQL */ `
