@@ -12,7 +12,7 @@ export * from './types/webhooksHandler.js';
 export * from './types/webhooks/index.js';
 export {
   WebhookSubscriptionTopic,
-  BulkOperationFragment,
+  type BulkOperationFragment,
   BulkOperationStatus,
   BulkOperationErrorCode,
 } from './types/graphql.js';
