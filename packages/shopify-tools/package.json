@@ -1,6 +1,15 @@
 {
   "name": "@iwci/shopify-tools",
   "version": "1.5.1",
+  "dependencies": {
+    "debug": "^4.3.4",
+    "graphql-tag": "^2.12.6",
+    "nanoid": "^5.0.2",
+    "tslib": "^2.6.1"
+  },
+  "devDependencies": {
+    "graphql": "^16.7.1"
+  },
   "optionalDependencies": {
     "@shopify/shopify-app-express": ">=2.0.0"
   },
