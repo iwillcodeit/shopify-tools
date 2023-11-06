@@ -1,6 +1,6 @@
 {
   "name": "@iwci/shopify-tools",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "dependencies": {
     "debug": "^4.3.4",
     "graphql-tag": "^2.12.6",
