@@ -24,7 +24,6 @@
         "project": "packages/shopify-tools/package.json",
         "format": ["esm", "cjs"],
         "external": "all",
-        "generateExportsField": true,
         "assets": [
           {
             "glob": "packages/shopify-tools/README.md",

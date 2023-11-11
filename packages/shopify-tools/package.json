@@ -1,15 +1,22 @@
 {
   "name": "@iwci/shopify-tools",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "dependencies": {
     "debug": "^4.3.4",
     "graphql-tag": "^2.12.6",
     "nanoid": "^5.0.2",
     "tslib": "^2.6.1"
   },
-  "devDependencies": {
-    "graphql": "^16.7.1"
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./index.esm.js",
+      "require": "./index.cjs.js",
+      "default": "./index.esm.js"
+    }
   },
+  "module": "./index.esm.js",
+  "main": "./index.cjs.js",
   "optionalDependencies": {
     "@shopify/shopify-app-express": ">=2.0.0"
   },
