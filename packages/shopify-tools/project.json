@@ -11,7 +11,6 @@
         "command": "npx graphql-codegen --config packages/shopify-tools/codegen.ts"
       }
     },
-
     "build": {
       "executor": "@nx/rollup:rollup",
       "outputs": ["{options.outputPath}"],
@@ -51,6 +50,14 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["packages/shopify-tools/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/packages/shopify-tools"
       }
     }
   },
