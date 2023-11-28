@@ -109,7 +109,7 @@ export async function* bulkQuery<T>(client: AdminApiClient, query: string) {
   try {
     const result = await runBulkQuery(client, query, operationPath);
 
-    debug('Executing bulk %s', operationId);
+    debug('Finished bulk %s', operationId);
 
     if (Number(result.rootObjectCount) === 0) {
       throw new EmptyBulkError(result);

@@ -19,7 +19,7 @@
         "main": "packages/shopify-tools/src/index.ts",
         "outputPath": "dist/packages/shopify-tools",
         "tsConfig": "packages/shopify-tools/tsconfig.lib.json",
-        "compiler": "swc",
+        "compiler": "tsc",
         "project": "packages/shopify-tools/package.json",
         "format": ["esm", "cjs"],
         "external": "all",
