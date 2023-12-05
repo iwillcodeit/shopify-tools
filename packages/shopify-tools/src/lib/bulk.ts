@@ -118,6 +118,7 @@ export async function* bulkQuery<T>(client: AdminApiClient, query: string) {
       throw new EmptyBulkError(result);
     }
 
+    debug('Creating read interface for bulk %s', operationId);
     const rl = createInterface({
       input: createReadStream(operationPath),
       crlfDelay: Infinity,
@@ -126,6 +127,8 @@ export async function* bulkQuery<T>(client: AdminApiClient, query: string) {
     for await (const line of rl) {
       yield JSON.parse(line) as T;
     }
+  } catch (e) {
+    throw new Error('Failed to execute bulk', { cause: e });
   } finally {
     unlinkMaybe(operationPath).catch(console.error);
   }

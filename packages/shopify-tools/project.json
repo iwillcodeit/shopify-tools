@@ -23,6 +23,7 @@
         "project": "packages/shopify-tools/package.json",
         "format": ["esm", "cjs"],
         "external": "all",
+        "rollupConfig": "packages/shopify-tools/rollup.config.cjs",
         "assets": [
           {
             "glob": "packages/shopify-tools/README.md",

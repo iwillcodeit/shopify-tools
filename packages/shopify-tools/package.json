@@ -1,17 +1,17 @@
 {
   "name": "@iwci/shopify-tools",
-  "version": "1.6.2",
+  "version": "1.6.4",
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./index.esm.js",
-      "require": "./index.cjs.js",
-      "default": "./index.esm.js"
+      "import": "./index.esm.mjs",
+      "require": "./index.cjs.cjs",
+      "default": "./index.esm.mjs"
     }
   },
-  "module": "./index.esm.js",
-  "main": "./index.cjs.js",
+  "module": "./index.esm.mjs",
+  "main": "./index.cjs.cjs",
   "dependencies": {
     "debug": "^4.3.4",
     "graphql-tag": "^2.12.6",
