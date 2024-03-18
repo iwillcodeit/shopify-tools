@@ -61,7 +61,7 @@
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/packages/shopify-tools"
       }
-    },
+    }
   },
   "tags": []
 }

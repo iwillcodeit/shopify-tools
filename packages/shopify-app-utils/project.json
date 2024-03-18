@@ -55,7 +55,7 @@
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/packages/shopify-app-utils"
       }
-    },
+    }
   },
   "tags": []
 }
