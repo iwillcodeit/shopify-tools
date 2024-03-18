@@ -66,10 +66,10 @@ export function parseOperation<
   Operations extends AllOperations = AllOperations,
   Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
 >(operation: BulkOperationType<Operation, Operations, Values>) {
-  if (typeof operation === 'string') {
-    return operation;
+  if (typeof operation === 'string' || typeof operation === 'number' || typeof operation === 'symbol') {
+    return String(operation);
   } else {
-    return parseOperation<Operation, Operations, Values>(operation);
+    return prepareBulkOperation<Operation, Operations, Values>(operation.query, operation.variables);
   }
 }
 
