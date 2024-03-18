@@ -1,6 +1,9 @@
 import type { ApiClient, AllOperations, OperationVariables } from '@shopify/graphql-client';
 
-export type AllClientOperations<Client extends ApiClient = ApiClient> = Client extends ApiClient<any, infer Operations>
+export type AllClientOperations<Client extends ApiClient<any, any> = ApiClient> = Client extends ApiClient<
+  any,
+  infer Operations
+>
   ? Operations
   : AllOperations;
 

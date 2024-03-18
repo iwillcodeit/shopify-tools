@@ -119,13 +119,13 @@ type ApiClientBatchRequestResponse<TData = any> = { data: Array<TData>; errors: 
 
 export async function batchMutation<
   TData = undefined,
-  Client extends ApiClient = ApiClient,
+  Client extends ApiClient<any, any> = ApiClient,
   Operation extends keyof Operations = string,
   Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
   Values extends Record<string, any> = PickOperationVariables<Operation, Operations>,
   Data = TData extends undefined ? ReturnData<Operation, Operations> : TData
 >(
-  client: ApiClient,
+  client: Client,
   operation: Operation,
   values: Array<Values>,
   params?: ApiClientBatchRequestOptions

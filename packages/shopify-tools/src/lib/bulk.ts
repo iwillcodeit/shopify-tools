@@ -74,7 +74,7 @@ export function parseOperation<
 }
 
 export async function runBulkQuery<
-  Client extends ApiClient = ApiClient,
+  Client extends ApiClient<any, any> = ApiClient,
   Operation extends keyof Operations = string,
   Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
   Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
@@ -129,7 +129,7 @@ export async function runBulkQuery<
 
 export async function* bulkQuery<
   TData = undefined,
-  Client extends ApiClient = ApiClient,
+  Client extends ApiClient<any, any> = ApiClient,
   Operation extends keyof Operations = string,
   Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
   Values extends Record<string, any> = PickOperationVariables<Operation, Operations>,
@@ -164,7 +164,7 @@ export async function* bulkQuery<
 }
 
 export async function runBulkMutation<
-  Client extends ApiClient = ApiClient,
+  Client extends ApiClient<any, any> = ApiClient,
   Operation extends keyof Operations = string,
   Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
   Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
@@ -221,7 +221,7 @@ export async function runBulkMutation<
 
 export async function* bulkMutate<
   TData = undefined,
-  Client extends ApiClient = ApiClient,
+  Client extends ApiClient<any, any> = ApiClient,
   Operation extends keyof Operations = string,
   Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
   Values extends Record<string, any> = PickOperationVariables<Operation, Operations>,

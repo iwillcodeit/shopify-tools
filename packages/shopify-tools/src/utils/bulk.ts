@@ -33,7 +33,7 @@ export function verifyResult(result: BulkOperation) {
   }
 }
 
-export async function waitBulkOperation<Client extends ApiClient = ApiClient>(
+export async function waitBulkOperation<Client extends ApiClient<any, any> = ApiClient>(
   client: Client,
   bulkOperation: BulkOperation
 ) {
@@ -68,10 +68,10 @@ export async function waitBulkOperation<Client extends ApiClient = ApiClient>(
   return bulkOperation;
 }
 
-export async function createStagedUpload<Data = Record<string, unknown>, Client extends ApiClient = ApiClient>(
-  client: Client,
-  variables: Data[]
-) {
+export async function createStagedUpload<
+  Data = Record<string, unknown>,
+  Client extends ApiClient<any, any> = ApiClient
+>(client: Client, variables: Data[]) {
   // Initialize bulk variables upload
   debug(`Creating new bulk mutation. Creating variable upload`);
   const { data, errors } = await client.request(CREATE_STAGED_UPLOAD);
