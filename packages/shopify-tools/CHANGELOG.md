@@ -1,0 +1,54 @@
+# 2.0.0 (2024-03-18)
+
+
+### 🚀 Features
+
+- add simplier bulkquery execution
+
+- throw error when bulk result is empty
+
+- create custom error classes for bulk operatios
+
+- add webhook wrapper
+
+- make bulkd streamable to anything, and make bulk completion wait optionnal
+
+- add bulkMutate itterator
+
+- update build target and support any nanoid version
+
+- add bulk query preparsing with variables support
+
+- add bulk operations preparation and types to bulkd libs
+
+- add utils exports for graphql & bulkd
+
+- **shopify-tools:** make package esm & csj retro-compatible
+
+- **shopify-tools:** fix package module
+
+
+### 🩹 Fixes
+
+- await sleep
+
+- package deps
+
+- export graphql types
+
+- type export
+
+- package dependencies
+
+- es/csj compatibility
+
+- module type
+
+- memory-leak in gql-tag
+
+- msj and cjs compatibility
+
+
+### ❤️  Thank You
+
+- Octanium
