@@ -1,7 +1,6 @@
 {
   "name": "@iwci/shopify-app-utils",
   "version": "1.0.0",
-  "type": "module",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -39,5 +38,9 @@
   "peerDependencies": {
     "@shopify/shopify-app-express": ">=4.0.0",
     "@shopify/shopify-api": ">=9.0.0"
-  }
+  },
+  "dependencies": {
+    "@swc/helpers": "~0.5.2"
+  },
+  "devDependencies": {}
 }

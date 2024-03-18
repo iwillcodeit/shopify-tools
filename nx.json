@@ -53,6 +53,12 @@
     ],
     "sharedGlobals": []
   },
+  "release": {
+    "projects": ["packages/*"],
+    "version": {
+      "preVersionCommand": "pnpm dlx nx run-many -t build"
+    }
+  },
   "workspaceLayout": {
     "appsDir": "packages",
     "libsDir": "packages"

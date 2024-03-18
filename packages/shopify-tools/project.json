@@ -12,7 +12,9 @@
     },
     "build": {
       "executor": "@nx/rollup:rollup",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "main": "packages/shopify-tools/src/index.ts",
@@ -20,7 +22,10 @@
         "tsConfig": "packages/shopify-tools/tsconfig.lib.json",
         "compiler": "tsc",
         "project": "packages/shopify-tools/package.json",
-        "format": ["esm", "cjs"],
+        "format": [
+          "esm",
+          "cjs"
+        ],
         "external": "all",
         "rollupConfig": "packages/shopify-tools/rollup.config.cjs",
         "assets": [
@@ -41,17 +46,17 @@
         }
       }
     },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs shopify-tools {args.ver} {args.tag}",
-      "dependsOn": ["build"]
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
+      "outputs": [
+        "{options.reportsDirectory}"
+      ],
       "options": {
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/packages/shopify-tools"

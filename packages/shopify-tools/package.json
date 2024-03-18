@@ -1,7 +1,6 @@
 {
   "name": "@iwci/shopify-tools",
   "version": "2.0.0-pre.0",
-  "type": "module",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -16,6 +15,7 @@
   "module": "./index.mjs",
   "main": "./index.cjs",
   "dependencies": {
+    "@swc/helpers": "~0.5.2",
     "debug": "*",
     "nanoid": "*"
   },
@@ -42,5 +42,6 @@
   },
   "peerDependencies": {
     "@shopify/admin-api-client": ">=0.2.8"
-  }
+  },
+  "devDependencies": {}
 }

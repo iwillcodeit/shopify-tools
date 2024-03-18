@@ -1,9 +1,0 @@
-{
-  "executors": {
-    "tsc": {
-      "implementation": "./src/executors/tsc/executor.ts",
-      "schema": "./src/executors/tsc/schema.json",
-      "description": "Build a project using TypeScript."
-    }
-  }
-}

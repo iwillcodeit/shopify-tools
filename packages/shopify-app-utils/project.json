@@ -6,7 +6,9 @@
   "targets": {
     "build": {
       "executor": "@nx/rollup:rollup",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "main": "packages/shopify-app-utils/src/index.ts",
@@ -14,7 +16,10 @@
         "tsConfig": "packages/shopify-app-utils/tsconfig.lib.json",
         "compiler": "tsc",
         "project": "packages/shopify-app-utils/package.json",
-        "format": ["esm", "cjs"],
+        "format": [
+          "esm",
+          "cjs"
+        ],
         "external": "all",
         "rollupConfig": "packages/shopify-app-utils/rollup.config.cjs",
         "assets": [
@@ -35,17 +40,17 @@
         }
       }
     },
-    "publish": {
-      "command": "node tools/scripts/publish.mjs shopify-app-utils {args.ver} {args.tag}",
-      "dependsOn": ["build"]
-    },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": [
+        "{options.outputFile}"
+      ]
     },
     "test": {
       "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
+      "outputs": [
+        "{options.reportsDirectory}"
+      ],
       "options": {
         "passWithNoTests": true,
         "reportsDirectory": "../../coverage/packages/shopify-app-utils"
