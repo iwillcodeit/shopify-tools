@@ -14,15 +14,6 @@
     "src/**/*.spec.js",
     "src/**/*.test.jsx",
     "src/**/*.spec.jsx",
-    "src/**/*.d.ts",
-    "tests/**/*.test.ts",
-    "tests/**/*.spec.ts",
-    "tests/**/*.test.tsx",
-    "tests/**/*.spec.tsx",
-    "tests/**/*.test.js",
-    "tests/**/*.spec.js",
-    "tests/**/*.test.jsx",
-    "tests/**/*.spec.jsx",
-    "tests/**/*.d.ts"
+    "src/**/*.d.ts"
   ]
 }

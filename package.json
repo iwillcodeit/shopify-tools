@@ -4,22 +4,19 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "generate": "graphql-codegen --config codegen.ts"
+    "generate": "graphql-codegen"
   },
   "private": true,
   "type": "module",
   "dependencies": {
     "@nx/devkit": "16.5.5",
     "debug": "^4.3.4",
-    "graphql": "^16.7.1",
-    "graphql-tag": "^2.12.6",
+    "graphql": "^16.8.1",
     "nanoid": "^5.0.2",
     "tslib": "^2.6.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
-    "@graphql-codegen/typescript": "^4.0.1",
-    "@graphql-codegen/typescript-operations": "^4.0.1",
     "@nx/eslint-plugin": "16.5.5",
     "@nx/js": "17.1.2",
     "@nx/linter": "16.5.5",
@@ -27,8 +24,11 @@
     "@nx/rollup": "^17.0.2",
     "@nx/vite": "^17.1.2",
     "@nx/workspace": "16.5.5",
-    "@shopify/shopify-api": "^8.0.0",
-    "@shopify/shopify-app-express": "^3.0.0",
+    "@shopify/admin-api-client": "^0.2.8",
+    "@shopify/api-codegen-preset": "^0.0.5",
+    "@shopify/graphql-client": "^0.10.3",
+    "@shopify/shopify-api": "^9.0.0",
+    "@shopify/shopify-app-express": "^4.0.0",
     "@types/debug": "^4.1.8",
     "@types/node": "^18.7.1",
     "@typescript-eslint/eslint-plugin": "^5.60.1",

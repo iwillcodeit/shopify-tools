@@ -1,31 +1,25 @@
 {
-  "name": "shopify-tools",
+  "name": "shopify-app-utils",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/shopify-tools/src",
+  "sourceRoot": "packages/shopify-app-utils/src",
   "projectType": "library",
   "targets": {
-    "generate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm run graphql-codegen"
-      }
-    },
     "build": {
       "executor": "@nx/rollup:rollup",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "main": "packages/shopify-tools/src/index.ts",
-        "outputPath": "dist/packages/shopify-tools",
-        "tsConfig": "packages/shopify-tools/tsconfig.lib.json",
+        "main": "packages/shopify-app-utils/src/index.ts",
+        "outputPath": "dist/packages/shopify-app-utils",
+        "tsConfig": "packages/shopify-app-utils/tsconfig.lib.json",
         "compiler": "tsc",
-        "project": "packages/shopify-tools/package.json",
+        "project": "packages/shopify-app-utils/package.json",
         "format": ["esm", "cjs"],
         "external": "all",
-        "rollupConfig": "packages/shopify-tools/rollup.config.cjs",
+        "rollupConfig": "packages/shopify-app-utils/rollup.config.cjs",
         "assets": [
           {
-            "glob": "packages/shopify-tools/README.md",
+            "glob": "packages/shopify-app-utils/README.md",
             "input": ".",
             "output": "."
           }
@@ -42,14 +36,14 @@
       }
     },
     "publish": {
-      "command": "node tools/scripts/publish.mjs shopify-tools {args.ver} {args.tag}",
+      "command": "node tools/scripts/publish.mjs shopify-app-utils {args.ver} {args.tag}",
       "dependsOn": ["build"]
     },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/shopify-tools/**/*.ts"]
+        "lintFilePatterns": ["packages/shopify-app-utils/**/*.ts"]
       }
     },
     "test": {
@@ -57,7 +51,7 @@
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/packages/shopify-tools"
+        "reportsDirectory": "../../coverage/packages/shopify-app-utils"
       }
     }
   },

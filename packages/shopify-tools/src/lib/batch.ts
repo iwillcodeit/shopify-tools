@@ -1,13 +1,17 @@
-import gql from 'graphql-tag';
-
-import { Kind } from 'graphql/language/kinds.js';
-import { print } from 'graphql/language/printer.js';
+import { parse, print, Kind } from 'graphql';
+import type {
+  ApiClient,
+  ResponseErrors,
+  ApiClientRequestOptions,
+  AllOperations,
+  ReturnData,
+} from '@shopify/graphql-client';
 import type { DocumentNode, FieldNode, OperationDefinitionNode } from 'graphql/language/ast.js';
-import type { Batched, DeepMutable } from '../types/index.js';
-import { AdminApiClient } from './AdminApiClient.js';
+import type { DeepMutable } from '../types/index.js';
 import { sleep } from '../utils/index.js';
 
 import Debug from 'debug';
+import { AllClientOperations, PickOperationVariables } from '../types/shopify.js';
 const debug = Debug('shopify-tools:batch');
 
 export interface BatchParams {
@@ -27,16 +31,20 @@ export function getBatchParams(params?: Partial<BatchParams> | null): BatchParam
   };
 }
 
-export function prepareBatchMutation<V extends Record<string, unknown> = Record<string, unknown>>(
-  mutationStr: string,
-  values: V[],
+export function prepareBatchMutation<
+  Operation extends keyof Operations = string,
+  Operations extends AllOperations = AllOperations,
+  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
+>(
+  mutationStr: Operation,
+  values: Array<Values>,
   params?: Partial<BatchParams> | null
-): { name: string; queries: Array<{ mutation: string; variables: Record<string, unknown> }> } {
-  const queries: Array<{ mutation: string; variables: Record<string, unknown> }> = [];
+): { name: string; queries: Array<{ mutation: string; variables: any }> } {
+  const queries: Array<{ mutation: string; variables: any }> = [];
 
   const { batchSize } = getBatchParams(params);
 
-  const document = structuredClone(gql(String(mutationStr))) as DeepMutable<DocumentNode>;
+  const document = structuredClone(parse(String(mutationStr))) as DeepMutable<DocumentNode>;
 
   if (document.kind !== Kind.DOCUMENT) throw new Error('Query definition is missing');
 
@@ -85,7 +93,7 @@ export function prepareBatchMutation<V extends Record<string, unknown> = Record<
       };
       selection.arguments = selection.arguments?.map((arg) => {
         if (arg.value.kind === Kind.VARIABLE) {
-          arg.value.name.value = `${arg.name.value}_${I}`;
+          arg.value.name.value = `${arg.value.name.value}_${I}`;
         }
         return arg;
       });
@@ -105,14 +113,28 @@ export function prepareBatchMutation<V extends Record<string, unknown> = Record<
   return { name, queries };
 }
 
+type ApiClientBatchRequestOptions = Omit<ApiClientRequestOptions, 'variables'> & Partial<BatchParams>;
+
+type ApiClientBatchRequestResponse<TData = any> = { data: Array<TData>; errors: Array<ResponseErrors> };
+
 export async function batchMutation<
-  T extends Record<string, unknown>,
-  V extends Record<string, unknown> = Record<string, unknown>
->(client: AdminApiClient, mutationStr: string, values: V[], params?: Partial<BatchParams> | null): Promise<Batched<T>> {
+  TData = undefined,
+  Client extends ApiClient = ApiClient,
+  Operation extends keyof Operations = string,
+  Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
+  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>,
+  Data = TData extends undefined ? ReturnData<Operation, Operations> : TData
+>(
+  client: ApiClient,
+  operation: Operation,
+  values: Array<Values>,
+  params?: ApiClientBatchRequestOptions
+): Promise<ApiClientBatchRequestResponse<Data>> {
   const { batchSize, waitTime } = getBatchParams(params);
 
-  const { name, queries } = prepareBatchMutation<V>(mutationStr, values, params);
-  let responses = {} as Batched<T>;
+  const { name, queries } = prepareBatchMutation<Operation, Operations, Values>(operation, values, params);
+  const errors: Array<ResponseErrors> = [];
+  const data: Array<Data> = [];
 
   debug(
     'Executing %s in batch. %d inputs to mutate. (batchSize=%d,waitTime=%dms). Splitting into %d batches',
@@ -122,23 +144,29 @@ export async function batchMutation<
     waitTime,
     queries
   );
-  for (const [i, query] of queries.entries()) {
+
+  for (const [i, { mutation, variables }] of queries.entries()) {
     debug('Mutating batch n°%d', i / batchSize + 1);
 
-    const res = await client.mutate<Record<string, any>>({
-      ...query,
+    const res = await client.request<Data>(mutation, {
+      variables,
       headers: {
         'X-GraphQL-Cost-Include-Fields': 'true',
       },
     });
 
-    responses = {
-      ...responses,
-      ...res,
-    };
+    if (res.data) {
+      data.push(res.data);
+    }
+    if (res.errors) {
+      errors.push(res.errors);
+    }
 
     await sleep(waitTime);
   }
 
-  return responses;
+  return {
+    data,
+    errors,
+  };
 }

@@ -1,9 +1,9 @@
-import { BulkOperationFragment } from '../types/graphql';
+import { BulkOperation } from '../types/index';
 
 export class BulkError extends Error {
-  bulk: BulkOperationFragment;
+  bulk: BulkOperation;
 
-  constructor(bulk: BulkOperationFragment, message: string) {
+  constructor(bulk: BulkOperation, message: string) {
     super(message);
     this.name = 'BulkError';
     this.bulk = bulk;
@@ -17,7 +17,7 @@ export class BulkError extends Error {
 }
 
 export class EmptyBulkError extends BulkError {
-  constructor(bulk: BulkOperationFragment, message = 'Bulk is empty.') {
+  constructor(bulk: BulkOperation, message = 'Bulk is empty.') {
     super(bulk, message);
     this.name = 'EmptyObjectError';
   }
