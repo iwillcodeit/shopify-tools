@@ -1,3 +1,15 @@
+## 2.1.2 (2024-03-18)
+
+
+### 🩹 Fixes
+
+- types extensibility
+
+
+### ❤️  Thank You
+
+- Octanium
+
 ## 2.1.1 (2024-03-18)
 
 
