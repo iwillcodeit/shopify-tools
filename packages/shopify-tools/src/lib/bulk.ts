@@ -1,30 +1,18 @@
-import { sleep } from '../utils/index.js';
-
-import type { AdminApiClient } from '@shopify/admin-api-client';
-import { fetchStreamToFile } from '../utils/bulk/download.js';
-
-import { BulkError, EmptyBulkError } from '../errors/EmptyObjectError.js';
-
 import { nanoid } from 'nanoid';
 import Debug from 'debug';
 import { createInterface } from 'node:readline';
 import { createReadStream } from 'node:fs';
 import { Writable } from 'node:stream';
 import { unlinkMaybe } from '../utils/fs.js';
-import { BULK_MUTATION, BULK_QUERY, CREATE_STAGED_UPLOAD, GET_BULK_STATUS } from '../graphql/queries.js';
-import { BulkOperationStatus } from '../types/api.js';
-import type {
-  GetBulkStatusQuery,
-  GetBulkStatusQueryVariables,
-  RunBulkQueryMutation,
-  RunBulkQueryMutationVariables,
-} from '../types/admin.generated.js';
-import { BulkOperation, type DeepMutable } from '../types/index.js';
-import type { AllOperations } from '@shopify/graphql-client';
-import { PickOperationVariables } from '../types/shopify';
+import { BULK_MUTATION, BULK_QUERY } from '../graphql/queries.js';
+import type { RunBulkQueryMutation, RunBulkQueryMutationVariables } from '../types/admin.generated.js';
+import type { DeepMutable } from '../types/index.js';
+import type { AllOperations, ApiClient, ReturnData } from '@shopify/graphql-client';
+import { AllClientOperations, PickOperationVariables } from '../types/shopify';
 import { Kind, print, parse } from 'graphql';
 import type { DocumentNode, OperationDefinitionNode } from 'graphql/language/ast';
 import { applyVariables, parseValues } from '../utils/graphql';
+import { createStagedUpload, fetchStreamToFile, verifyResult, waitBulkOperation } from '../utils/bulk';
 
 const debug = Debug('shopify-tools:bulk');
 
@@ -62,45 +50,41 @@ export function prepareBulkOperation<
   return print(document as DocumentNode);
 }
 
-export async function waitBulkOperation(client: AdminApiClient, bulkOperation: BulkOperation) {
-  // Check status with pooling
-  while (bulkOperation.status === BulkOperationStatus.Running || bulkOperation.status === BulkOperationStatus.Created) {
-    await sleep(5000); // Wait 5s
-    debug(`Fetching operation status`);
+type BulkOperationType<
+  Operation extends keyof Operations = string,
+  Operations extends AllOperations = AllOperations,
+  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
+> =
+  | Operation
+  | {
+      query: Operation;
+      variables: Values;
+    };
 
-    const { data, errors } = await client.request<GetBulkStatusQuery>(GET_BULK_STATUS, {
-      variables: {
-        id: bulkOperation.id,
-      } satisfies GetBulkStatusQueryVariables,
-    });
-
-    if (errors) throw new Error('Failed to get bulk status', { cause: errors });
-
-    if (!data || !data.node || data.node.__typename !== 'BulkOperation') {
-      throw new Error('Failed to execute bulk operation: failed to get bulk operation status');
-    }
-
-    bulkOperation = data.node;
+export function parseOperation<
+  Operation extends keyof Operations = string,
+  Operations extends AllOperations = AllOperations,
+  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
+>(operation: BulkOperationType<Operation, Operations, Values>) {
+  if (typeof operation === 'string') {
+    return operation;
+  } else {
+    return parseOperation<Operation, Operations, Values>(operation);
   }
-
-  // Handle non success status
-  if (bulkOperation.status !== BulkOperationStatus.Completed) {
-    throw new BulkError(
-      bulkOperation,
-      `Bulk operation failed with status ${bulkOperation.status} (code: ${bulkOperation.errorCode})`
-    );
-  }
-
-  return bulkOperation;
 }
 
-export async function runBulkQuery(client: AdminApiClient, query: string, output: string | Writable | null) {
+export async function runBulkQuery<
+  Client extends ApiClient = ApiClient,
+  Operation extends keyof Operations = string,
+  Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
+  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
+>(client: Client, query: BulkOperationType<Operation, Operations, Values>, output: string | Writable | null) {
   // Start bulk operation
 
   debug(`Creating new bulk query.`);
   const { data, errors } = await client.request<RunBulkQueryMutation>(BULK_QUERY, {
     variables: {
-      query: query,
+      query: parseOperation(query),
     } satisfies RunBulkQueryMutationVariables,
   });
 
@@ -143,16 +127,14 @@ export async function runBulkQuery(client: AdminApiClient, query: string, output
   }
 }
 
-export function verifyResult(result: BulkOperation) {
-  if (Number(result.rootObjectCount) === 0) {
-    throw new EmptyBulkError(result);
-  }
-  if (!result.url) {
-    throw new EmptyBulkError(result);
-  }
-}
-
-export async function* bulkQuery<T>(client: AdminApiClient, query: string) {
+export async function* bulkQuery<
+  TData = undefined,
+  Client extends ApiClient = ApiClient,
+  Operation extends keyof Operations = string,
+  Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
+  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>,
+  Data = TData extends undefined ? ReturnData<Operation, Operations> : TData
+>(client: Client, query: BulkOperationType<Operation, Operations, Values>): AsyncGenerator<Data> {
   const operationId = nanoid();
 
   const operationPath = `/tmp/bulk-${operationId}.jsonl`;
@@ -172,7 +154,7 @@ export async function* bulkQuery<T>(client: AdminApiClient, query: string) {
     });
 
     for await (const line of rl) {
-      yield JSON.parse(line) as T;
+      yield JSON.parse(line) as Data;
     }
   } catch (e) {
     throw new Error('Failed to execute bulk', { cause: e });
@@ -181,68 +163,12 @@ export async function* bulkQuery<T>(client: AdminApiClient, query: string) {
   }
 }
 
-async function createStagedUpload<T = Record<string, unknown>>(client: AdminApiClient, variables: T[]) {
-  // Initialize bulk variables upload
-  debug(`Creating new bulk mutation. Creating variable upload`);
-  const { data, errors } = await client.request(CREATE_STAGED_UPLOAD);
-
-  if (errors) {
-    throw new Error('Failed to create staged upload', { cause: errors });
-  }
-
-  const stagedUploadsCreate = data?.stagedUploadsCreate;
-
-  if (!stagedUploadsCreate) {
-    throw new Error('Failed to create staged upload');
-  }
-
-  const variablesStr = variables.map((v) => JSON.stringify(v)).join('\r\n');
-  const target = stagedUploadsCreate.stagedTargets?.[0];
-
-  if (!target) {
-    throw new Error('Failed to create staged upload: no target');
-  }
-  if (!target.url) {
-    throw new Error('Failed to create staged upload: no target url');
-  }
-
-  debug(`Created file upload URL.`);
-
-  const form = new FormData();
-  let stagedUploadPath;
-  target.parameters.forEach(({ name, value }) => {
-    if (name === 'key') {
-      stagedUploadPath = value;
-    }
-    form.append(name, value);
-  });
-  form.append('file', new Blob([variablesStr]), '/tmp/variables.jsonl');
-
-  if (!stagedUploadPath) {
-    throw new Error('Missing stagedUploadPath');
-  }
-
-  debug(`Uploading mutation variables.`);
-
-  const res = await fetch(target.url, {
-    method: 'POST',
-    body: form,
-  });
-
-  if (!res.ok || res.status >= 400) {
-    throw new Error(`Failed to upload bulk operation variables with status ${res.status}:\n${await res.text()}`);
-  }
-
-  debug(`Uploaded mutation variables.`);
-  return { stagedUploadPath };
-}
-
-export async function runBulkMutation<T = Record<string, unknown>>(
-  client: AdminApiClient,
-  mutation: string,
-  variables: T[],
-  output: string | Writable | null
-) {
+export async function runBulkMutation<
+  Client extends ApiClient = ApiClient,
+  Operation extends keyof Operations = string,
+  Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
+  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
+>(client: Client, mutation: Operation, variables: Array<Values>, output: string | Writable | null) {
   const { stagedUploadPath } = await createStagedUpload(client, variables);
 
   debug(`Creating bulk operation...`);
@@ -293,11 +219,14 @@ export async function runBulkMutation<T = Record<string, unknown>>(
   }
 }
 
-export async function* bulkMutate<V = Record<string, unknown>, T = unknown>(
-  client: AdminApiClient,
-  mutation: string,
-  variables: V[]
-) {
+export async function* bulkMutate<
+  TData = undefined,
+  Client extends ApiClient = ApiClient,
+  Operation extends keyof Operations = string,
+  Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
+  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>,
+  Data = TData extends undefined ? ReturnData<Operation, Operations> : TData
+>(client: Client, mutation: string, variables: Array<Values>): AsyncGenerator<Data> {
   const operationId = nanoid();
 
   const operationPath = `/tmp/bulk-${operationId}.jsonl`;
@@ -316,7 +245,7 @@ export async function* bulkMutate<V = Record<string, unknown>, T = unknown>(
     });
 
     for await (const line of rl) {
-      yield JSON.parse(line) as T;
+      yield JSON.parse(line) as Data;
     }
   } finally {
     unlinkMaybe(operationPath).catch(console.error);

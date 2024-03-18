@@ -2,7 +2,7 @@ import { describe, expect } from 'vitest';
 import { prepareBatchMutation } from '../src';
 
 const query1 = /* GraphQL */ `
-  mutation test_updateTags($id: ID!, $tags: [String!]!) {
+  mutation updateTags($id: ID!, $tags: [String!]!) {
     tagsAdd(id: $id, tags: $tags) {
       userErrors {
         message
@@ -12,7 +12,7 @@ const query1 = /* GraphQL */ `
 `;
 
 const query2 = /* GraphQL */ `
-  mutation test_updateTags($someId: ID!, $tags: [String!]!) {
+  mutation updateTags($someId: ID!, $tags: [String!]!) {
     tagsAdd(id: $someId, tags: $tags) {
       userErrors {
         message
@@ -48,6 +48,6 @@ describe('prepareBatchMutation', () => {
       { someId: 'id2', tags: ['abc', 'def'] },
     ]);
 
-    console.log(queries);
+    console.dir(queries, { depth: null });
   });
 });
