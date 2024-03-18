@@ -1,20 +1,5 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "nx-cloud",
-      "options": {
-        "cacheableOperations": [
-          "generate",
-          "build",
-          "lint",
-          "test",
-          "e2e"
-        ],
-        "accessToken": "MmJmNTM5NzktNWY0NC00NTY4LTg4MmMtZDFkMDkwYjE2ZDUwfHJlYWQtd3JpdGU="
-      }
-    }
-  },
   "targetDefaults": {
     "build": {
       "dependsOn": [
@@ -23,21 +8,16 @@
       "inputs": [
         "production",
         "^production"
-      ]
-    },
-    "lint": {
-      "inputs": [
-        "default",
-        "{workspaceRoot}/.eslintrc.json",
-        "{workspaceRoot}/.eslintignore"
-      ]
+      ],
+      "cache": true
     },
     "test": {
       "inputs": [
         "default",
         "^production",
         "{workspaceRoot}/jest.preset.js"
-      ]
+      ],
+      "cache": true
     },
     "@nx/vite:test": {
       "cache": true,
@@ -45,6 +25,17 @@
         "default",
         "^production"
       ]
+    },
+    "generate": {
+      "cache": true
+    },
+    "@nx/eslint:lint": {
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/.eslintignore"
+      ],
+      "cache": true
     }
   },
   "namedInputs": {
@@ -65,5 +56,7 @@
   "workspaceLayout": {
     "appsDir": "packages",
     "libsDir": "packages"
-  }
+  },
+  "nxCloudAccessToken": "MmJmNTM5NzktNWY0NC00NTY4LTg4MmMtZDFkMDkwYjE2ZDUwfHJlYWQtd3JpdGU=",
+  "useInferencePlugins": false
 }
