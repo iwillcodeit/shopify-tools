@@ -36,6 +36,11 @@
         "{workspaceRoot}/.eslintignore"
       ],
       "cache": true
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/packages/{projectName}"
+      }
     }
   },
   "namedInputs": {
