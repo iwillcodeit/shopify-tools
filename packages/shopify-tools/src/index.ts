@@ -4,5 +4,8 @@ export * from './lib/flatten-connection.js';
 
 export * from './errors/EmptyObjectError.js';
 
+export * from './utils/bulk';
+export * from './utils/graphql';
+
 export type { BulkOperation } from './types/index.js';
 export { BulkOperationStatus, BulkOperationErrorCode } from './types/api.js';
