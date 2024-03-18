@@ -1,6 +1,6 @@
 {
   "name": "@iwci/shopify-app-utils",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "exports": {
     "./package.json": "./package.json",
     ".": {
