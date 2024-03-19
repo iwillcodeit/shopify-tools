@@ -1,3 +1,20 @@
+## 2.1.4 (2024-03-19)
+
+
+### 🚀 Features
+
+- export BulkOperationType
+
+
+### 🩹 Fixes
+
+- variable types
+
+
+### ❤️  Thank You
+
+- Octanium
+
 ## 2.1.3 (2024-03-18)
 
 
