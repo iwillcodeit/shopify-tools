@@ -1,2 +1,2 @@
-export * from './lib/webhooks.js';
-export * from './types/index.js';
+export * from './lib/webhooks';
+export * from './types';

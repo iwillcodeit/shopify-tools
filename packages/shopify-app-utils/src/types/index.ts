@@ -1,8 +1,8 @@
 import { DeliveryMethod } from '@shopify/shopify-api';
-import { Payload, Topics } from './webhooks/index.js';
+import { Payload, Topics } from './webhooks';
 
-export * from './webhooks/index.js';
-export * from './topics.js';
+export * from './webhooks';
+export * from './topics';
 
 export declare type WebhookHandlerFunction<T extends Topics> = (
   topic: T,

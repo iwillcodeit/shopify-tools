@@ -1,3 +1,3 @@
-export * from './delete.js';
-export * from './create.js';
-export * from './update.js';
+export * from './delete';
+export * from './create';
+export * from './update';

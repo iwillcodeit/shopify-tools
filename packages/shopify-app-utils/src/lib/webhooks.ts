@@ -1,4 +1,4 @@
-import type { WebhookHandler, WebhookHandlersParam, Topics } from '../types/index.js';
+import type { WebhookHandler, WebhookHandlersParam, Topics } from '../types';
 import type { WebhookHandler as BaseWebhookHandler } from '@shopify/shopify-api';
 import { DeliveryMethod } from '@shopify/shopify-api';
 

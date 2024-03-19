@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 import { EnumValue, parseValue } from '../src/utils/graphql';
-import { Kind } from 'graphql/language/kinds.js';
+import { Kind } from 'graphql/language/kinds';
 import {
   BooleanValueNode,
   EnumValueNode,

@@ -4,10 +4,10 @@ import { finished } from 'node:stream/promises';
 import { ReadableStream } from 'node:stream/web';
 import { CREATE_STAGED_UPLOAD, GET_BULK_STATUS } from '../graphql/queries';
 import Debug from 'debug';
-import { BulkError, EmptyBulkError } from '../errors/EmptyObjectError.js';
-import { BulkOperation } from '../types/index';
+import { BulkError, EmptyBulkError } from '../errors/EmptyObjectError';
+import { BulkOperation } from '../types';
 import { BulkOperationStatus } from '../types/api';
-import { sleep } from './index';
+import { sleep } from '.';
 import type { GetBulkStatusQuery, GetBulkStatusQueryVariables } from '../types/admin.generated';
 import type { ApiClient } from '@shopify/graphql-client';
 

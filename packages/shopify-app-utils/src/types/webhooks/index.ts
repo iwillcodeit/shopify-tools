@@ -1,24 +1,17 @@
-import type { ProductCreate, ProductDelete, ProductUpdate } from './products/index.js';
-import type { OrderCreate, OrderDelete, OrderUpdate, OrderEdit } from './orders/index.js';
-import type {
-  ReturnApprove,
-  ReturnCancel,
-  ReturnClose,
-  ReturnDecline,
-  ReturnReopen,
-  ReturnRequest,
-} from './returns/index.js';
-import type { CustomersDataRequest, CustomersRedact, ShopRedact } from './mandatory/index.js';
-import type { CustomerCreate, CustomerDelete, CustomerUpdate } from './customers/index.js';
-import { WebhookSubscriptionTopic } from '../topics.js';
-import { BulkOperationFinish } from './bulk.js';
+import type { ProductCreate, ProductDelete, ProductUpdate } from './products';
+import type { OrderCreate, OrderDelete, OrderUpdate, OrderEdit } from './orders';
+import type { ReturnApprove, ReturnCancel, ReturnClose, ReturnDecline, ReturnReopen, ReturnRequest } from './returns';
+import type { CustomersDataRequest, CustomersRedact, ShopRedact } from './mandatory';
+import type { CustomerCreate, CustomerDelete, CustomerUpdate } from './customers';
+import { WebhookSubscriptionTopic } from '../topics';
+import { BulkOperationFinish } from './bulk';
 
-export * from './products/index.js';
-export * from './orders/index.js';
-export * from './returns/index.js';
-export * from './mandatory/index.js';
-export * from './customers/index.js';
-export * from './bulk.js';
+export * from './products';
+export * from './orders';
+export * from './returns';
+export * from './mandatory';
+export * from './customers';
+export * from './bulk';
 
 export type Payloads = {
   CUSTOMERS_DATA_REQUEST: CustomersDataRequest;

@@ -6,12 +6,12 @@ import type {
   AllOperations,
   ReturnData,
 } from '@shopify/graphql-client';
-import type { DocumentNode, FieldNode, OperationDefinitionNode } from 'graphql/language/ast.js';
-import type { DeepMutable } from '../types/index.js';
-import { sleep } from '../utils/index.js';
+import type { DocumentNode, FieldNode, OperationDefinitionNode } from 'graphql/language/ast';
+import type { DeepMutable } from '../types';
+import { sleep } from '../utils';
 
 import Debug from 'debug';
-import { AllClientOperations, PickOperationVariables } from '../types/shopify.js';
+import { AllClientOperations, PickOperationVariables } from '../types/shopify';
 const debug = Debug('shopify-tools:batch');
 
 export interface BatchParams {
@@ -99,9 +99,11 @@ export function prepareBatchMutation<
       });
       mutationDef.selectionSet.selections.push(selection);
 
-      Object.entries(variable).forEach(([key, value]) => {
-        variables[`${key}_${I}`] = value;
-      });
+      if (variable) {
+        Object.entries(variable).forEach(([key, value]) => {
+          variables[`${key}_${I}`] = value;
+        });
+      }
     });
 
     queries.push({

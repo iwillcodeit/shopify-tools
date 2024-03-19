@@ -1,4 +1,4 @@
-import { BulkOperation } from '../types/index';
+import { BulkOperation } from '../types';
 
 export class BulkError extends Error {
   bulk: BulkOperation;
