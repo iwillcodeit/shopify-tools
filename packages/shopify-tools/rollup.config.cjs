@@ -1,5 +1,3 @@
-const { typeDefinitions } = require('@nx/js/src/plugins/rollup/type-definitions');
-
 /**
  *
  * @param {import('rollup').OutputOptions} output

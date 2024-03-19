@@ -34,7 +34,7 @@ export function getBatchParams(params?: Partial<BatchParams> | null): BatchParam
 export function prepareBatchMutation<
   Operation extends keyof Operations = string,
   Operations extends AllOperations = AllOperations,
-  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
+  Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>
 >(
   mutationStr: Operation,
   values: Array<Values>,
@@ -78,7 +78,7 @@ export function prepareBatchMutation<
 
       if (mutationVariables) {
         mutationDef.variableDefinitions?.push(
-          ...structuredClone(mutationVariables).map((def, j) => {
+          ...structuredClone(mutationVariables).map((def) => {
             def.variable.name.value = `${def.variable.name.value}_${I}`;
             return def;
           })
@@ -122,7 +122,7 @@ export async function batchMutation<
   Client extends ApiClient<any, any> = ApiClient,
   Operation extends keyof Operations = string,
   Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
-  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>,
+  Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>,
   Data = TData extends undefined ? ReturnData<Operation, Operations> : TData
 >(
   client: Client,

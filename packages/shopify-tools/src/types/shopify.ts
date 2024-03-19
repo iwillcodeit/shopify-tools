@@ -12,6 +12,6 @@ export type PickOperationVariables<
   Operations extends AllOperations = AllOperations
 > = Operation extends keyof Operations
   ? OperationVariables<Operation, Operations> extends Record<string, never>
-    ? never
+    ? Record<string, never>
     : OperationVariables<Operation, Operations>['variables']
   : Record<string, any>;

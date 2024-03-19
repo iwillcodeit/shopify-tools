@@ -19,7 +19,7 @@ const debug = Debug('shopify-tools:bulk');
 export function prepareBulkOperation<
   Operation extends keyof Operations = string,
   Operations extends AllOperations = AllOperations,
-  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
+  Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>
 >(operation: Operation, values?: Values): string {
   const document = structuredClone(parse(String(operation))) as DeepMutable<DocumentNode>;
 
@@ -53,7 +53,7 @@ export function prepareBulkOperation<
 type BulkOperationType<
   Operation extends keyof Operations = string,
   Operations extends AllOperations = AllOperations,
-  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
+  Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>
 > =
   | Operation
   | {
@@ -64,7 +64,7 @@ type BulkOperationType<
 export function parseOperation<
   Operation extends keyof Operations = string,
   Operations extends AllOperations = AllOperations,
-  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
+  Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>
 >(operation: BulkOperationType<Operation, Operations, Values>) {
   if (typeof operation === 'string' || typeof operation === 'number' || typeof operation === 'symbol') {
     return String(operation);
@@ -77,7 +77,7 @@ export async function runBulkQuery<
   Client extends ApiClient<any, any> = ApiClient,
   Operation extends keyof Operations = string,
   Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
-  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
+  Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>
 >(client: Client, query: BulkOperationType<Operation, Operations, Values>, output: string | Writable | null) {
   // Start bulk operation
 
@@ -132,7 +132,7 @@ export async function* bulkQuery<
   Client extends ApiClient<any, any> = ApiClient,
   Operation extends keyof Operations = string,
   Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
-  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>,
+  Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>,
   Data = TData extends undefined ? ReturnData<Operation, Operations> : TData
 >(client: Client, query: BulkOperationType<Operation, Operations, Values>): AsyncGenerator<Data> {
   const operationId = nanoid();
@@ -167,7 +167,7 @@ export async function runBulkMutation<
   Client extends ApiClient<any, any> = ApiClient,
   Operation extends keyof Operations = string,
   Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
-  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>
+  Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>
 >(client: Client, mutation: Operation, variables: Array<Values>, output: string | Writable | null) {
   const { stagedUploadPath } = await createStagedUpload(client, variables);
 
@@ -224,7 +224,7 @@ export async function* bulkMutate<
   Client extends ApiClient<any, any> = ApiClient,
   Operation extends keyof Operations = string,
   Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
-  Values extends Record<string, any> = PickOperationVariables<Operation, Operations>,
+  Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>,
   Data = TData extends undefined ? ReturnData<Operation, Operations> : TData
 >(client: Client, mutation: string, variables: Array<Values>): AsyncGenerator<Data> {
   const operationId = nanoid();

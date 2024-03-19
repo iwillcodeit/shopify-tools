@@ -1,1 +1,5 @@
 node_modules
+**/admin.generated.d.ts
+**/admin.types.d.ts
+**/storefront.generated.d.ts
+**/storefront.types.d.ts
