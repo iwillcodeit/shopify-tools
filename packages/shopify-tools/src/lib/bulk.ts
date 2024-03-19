@@ -50,7 +50,7 @@ export function prepareBulkOperation<
   return print(document as DocumentNode);
 }
 
-type BulkOperationType<
+export type BulkOperationType<
   Operation extends keyof Operations = string,
   Operations extends AllOperations = AllOperations,
   Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>
