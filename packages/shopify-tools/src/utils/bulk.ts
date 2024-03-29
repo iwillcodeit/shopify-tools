@@ -6,9 +6,8 @@ import { CREATE_STAGED_UPLOAD, GET_BULK_STATUS } from '../graphql/queries';
 import Debug from 'debug';
 import { BulkError, EmptyBulkError } from '../errors/EmptyObjectError';
 import { BulkOperation } from '../types';
-import { BulkOperationStatus } from '../types/api';
 import { sleep } from '.';
-import type { GetBulkStatusQuery, GetBulkStatusQueryVariables } from '../types/admin.generated';
+import type { GetBulkStatusQuery, GetBulkStatusQueryVariables } from '../types/admin.types';
 import type { ApiClient } from '@shopify/graphql-client';
 
 const debug = Debug('shopify-tools:bulk');
@@ -38,7 +37,7 @@ export async function waitBulkOperation<Client extends ApiClient<any, any> = Api
   bulkOperation: BulkOperation
 ) {
   // Check status with pooling
-  while (bulkOperation.status === BulkOperationStatus.Running || bulkOperation.status === BulkOperationStatus.Created) {
+  while (bulkOperation.status === 'RUNNING' || bulkOperation.status === 'CREATED') {
     await sleep(5000); // Wait 5s
     debug(`Fetching operation status`);
 
@@ -58,7 +57,7 @@ export async function waitBulkOperation<Client extends ApiClient<any, any> = Api
   }
 
   // Handle non success status
-  if (bulkOperation.status !== BulkOperationStatus.Completed) {
+  if (bulkOperation.status !== 'COMPLETED') {
     throw new BulkError(
       bulkOperation,
       `Bulk operation failed with status ${bulkOperation.status} (code: ${bulkOperation.errorCode})`

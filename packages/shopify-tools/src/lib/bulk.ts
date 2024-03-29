@@ -5,7 +5,7 @@ import { createReadStream } from 'node:fs';
 import { Writable } from 'node:stream';
 import { unlinkMaybe } from '../utils/fs';
 import { BULK_MUTATION, BULK_QUERY } from '../graphql/queries';
-import type { RunBulkQueryMutation, RunBulkQueryMutationVariables } from '../types/admin.generated';
+import type { RunBulkQueryMutation, RunBulkQueryMutationVariables } from '../types/admin.types';
 import type { DeepMutable } from '../types';
 import type { AllOperations, ApiClient, ReturnData } from '@shopify/graphql-client';
 import { AllClientOperations, PickOperationVariables } from '../types/shopify';
@@ -20,7 +20,7 @@ export function prepareBulkOperation<
   Operation extends keyof Operations = string,
   Operations extends AllOperations = AllOperations,
   Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>
->(operation: Operation, values?: Values): string {
+>(operation: Operation, values: Values): string {
   const document = structuredClone(parse(String(operation))) as DeepMutable<DocumentNode>;
 
   const operationDefinitions = document.definitions.filter((def) => def.kind === Kind.OPERATION_DEFINITION);

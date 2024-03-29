@@ -115,9 +115,9 @@ export function prepareBatchMutation<
   return { name, queries };
 }
 
-type ApiClientBatchRequestOptions = Omit<ApiClientRequestOptions, 'variables'> & Partial<BatchParams>;
+export type ApiClientBatchRequestOptions = Omit<ApiClientRequestOptions, 'variables'> & Partial<BatchParams>;
 
-type ApiClientBatchRequestResponse<TData = any> = { data: Array<TData>; errors: Array<ResponseErrors> };
+export type ApiClientBatchRequestResponse<TData = any> = { data: Array<TData>; errors: Array<ResponseErrors> };
 
 export async function batchMutation<
   TData = undefined,
