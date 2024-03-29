@@ -1,3 +1,15 @@
+## 2.4.0 (2024-03-29)
+
+
+### 🩹 Fixes
+
+- order editor client type
+
+
+### ❤️  Thank You
+
+- Octanium
+
 ## 2.3.0 (2024-03-29)
 
 
