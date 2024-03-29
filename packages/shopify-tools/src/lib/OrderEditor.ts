@@ -45,8 +45,11 @@ function isFunction(fn: unknown): fn is (...args: any[]) => any {
   return typeof fn === 'function';
 }
 
-export function editOrder(...args: ConstructorParameters<typeof OrderEditor>): OrderEditor {
-  return new OrderEditor(...args);
+export function editOrder<Client extends ApiClient<any, any> = ApiClient>(
+  client: Client,
+  orderId: string
+): OrderEditor<Client> {
+  return new OrderEditor<Client>(client, orderId);
 }
 
 export class OrderEditor<Client extends ApiClient<any, any> = ApiClient> extends DeferredPromise<OrderEditionResult> {
