@@ -133,7 +133,8 @@ export async function* bulkQuery<
   Operation extends keyof Operations = string,
   Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
   Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>,
-  Data = TData extends undefined ? ReturnData<Operation, Operations> : TData
+  // Data = TData extends undefined ? ReturnData<Operation, Operations> : TData
+  Data = TData extends undefined ? any : TData
 >(client: Client, query: BulkOperationType<Operation, Operations, Values>): AsyncGenerator<Data> {
   const operationId = nanoid();
 
@@ -225,7 +226,8 @@ export async function* bulkMutate<
   Operation extends keyof Operations = string,
   Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
   Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>,
-  Data = TData extends undefined ? ReturnData<Operation, Operations> : TData
+  // Data = TData extends undefined ? ReturnData<Operation, Operations> : TData
+  Data = TData extends undefined ? any : TData
 >(client: Client, mutation: string, variables: Array<Values>): AsyncGenerator<Data> {
   const operationId = nanoid();
 
