@@ -1,3 +1,15 @@
+## 2.5.0 (2024-03-29)
+
+
+### 🩹 Fixes
+
+- make bulk return any
+
+
+### ❤️  Thank You
+
+- Octanium
+
 ## 2.4.0 (2024-03-29)
 
 
