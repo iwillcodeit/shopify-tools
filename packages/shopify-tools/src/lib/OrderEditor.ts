@@ -49,11 +49,11 @@ export function editOrder(...args: ConstructorParameters<typeof OrderEditor>): O
   return new OrderEditor(...args);
 }
 
-export class OrderEditor extends DeferredPromise<OrderEditionResult> {
+export class OrderEditor<Client extends ApiClient<any, any> = ApiClient> extends DeferredPromise<OrderEditionResult> {
   [Symbol.toStringTag] = 'OrderEditor';
 
-  private readonly client;
-  private readonly orderId;
+  private readonly client: Client;
+  private readonly orderId: string;
 
   private _calculatedOrderId?: string;
   private _notifyCustomer = false;
@@ -65,7 +65,7 @@ export class OrderEditor extends DeferredPromise<OrderEditionResult> {
   private _removeLineItemDiscount: Array<OrderEditValue<OrderEditRemoveLineItemDiscountMutationVariables>> = [];
   private _setQuantity: Array<OrderEditValue<OrderEditSetQuantityMutationVariables>> = [];
 
-  constructor(client: ApiClient, orderId: string) {
+  constructor(client: Client, orderId: string) {
     super();
     this.client = client;
     this.orderId = orderId;
