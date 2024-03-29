@@ -1,3 +1,15 @@
+## 2.2.0 (2024-03-29)
+
+
+### 🚀 Features
+
+- add back order editor and reduce shpify api types size
+
+
+### ❤️  Thank You
+
+- Octanium
+
 ## 2.1.4 (2024-03-19)
 
 
