@@ -1,5 +1,13 @@
 import {
+  FulfillmentOrderCancelMutation,
+  FulfillmentOrderCancelMutationVariables,
+  FulfillmentOrderHoldInput,
+  FulfillmentOrderHoldMutation,
+  FulfillmentOrderHoldMutationVariables,
   FulfillmentOrderLineItemInput,
+  FulfillmentOrdersReleaseHoldsMutation,
+  FulfillmentOrdersSetFulfillmentDeadlineMutation,
+  FulfillmentOrdersSetFulfillmentDeadlineMutationVariables,
   FulfillmentTrackingInput,
   FulfillmentV2Input,
   FulfillOrdersMutation,
@@ -7,7 +15,7 @@ import {
   UpdateTrackingInfoMutation,
   UpdateTrackingInfoMutationVariables,
 } from '../types/admin.types';
-import { ApiClient } from '@shopify/graphql-client';
+import { ApiClient, ClientResponse } from '@shopify/graphql-client';
 import { DeferredPromise } from '../utils/DeferredPromise';
 import { ApiClientBatchRequestResponse, batchMutation } from './batch';
 import { shallowEqual } from '../utils/object';
@@ -16,6 +24,10 @@ import * as FulfillmentTypes from '../types/fulfillment';
 export interface FulfillmentProcessResponse {
   create: ApiClientBatchRequestResponse<FulfillOrdersMutation> | null | undefined;
   update: ApiClientBatchRequestResponse<UpdateTrackingInfoMutation> | null | undefined;
+  hold: ApiClientBatchRequestResponse<FulfillmentOrderHoldMutation> | null | undefined;
+  released: ClientResponse<FulfillmentOrdersReleaseHoldsMutation> | null | undefined;
+  cancel: ApiClientBatchRequestResponse<FulfillmentOrderCancelMutation> | null | undefined;
+  setDeadline: ApiClientBatchRequestResponse<FulfillmentOrdersSetFulfillmentDeadlineMutation> | null | undefined;
 }
 
 export type FulfillmentOrder = FulfillmentTypes.FulfillmentOrder & {
@@ -37,6 +49,10 @@ export class FulfillmentUpdater<
 
   private fulfillmentsToCreate: Array<FulfillOrdersMutationVariables> = [];
   private fulfillmentsToUpdate: Array<UpdateTrackingInfoMutationVariables> = [];
+  private fulfillmentOrderToHold: Array<FulfillmentOrderHoldMutationVariables> = [];
+  private fulfillmentOrdersToRelease = new Set<string>();
+  private fulfillmentOrdersToCancel: Array<FulfillmentOrderCancelMutationVariables> = [];
+  private fulfillmentOrdersToSetDeadline: Array<FulfillmentOrdersSetFulfillmentDeadlineMutationVariables> = [];
 
   constructor(client: Client) {
     super();
@@ -47,6 +63,10 @@ export class FulfillmentUpdater<
     this.setFulfillmentTrackingInfo = this.setFulfillmentTrackingInfo.bind(this);
     this.createFulfillmentTrackingInfo = this.createFulfillmentTrackingInfo.bind(this);
     this.updateFulfillmentTrackingInfo = this.updateFulfillmentTrackingInfo.bind(this);
+    this.holdFulfillmentOrder = this.holdFulfillmentOrder.bind(this);
+    this.releaseFulfillmentOrderHolds = this.releaseFulfillmentOrderHolds.bind(this);
+    this.cancelFulfillmentOrder = this.cancelFulfillmentOrder.bind(this);
+    this.setFulfillmentDeadline = this.setFulfillmentDeadline.bind(this);
   }
 
   /**
@@ -165,6 +185,7 @@ export class FulfillmentUpdater<
 
     return this;
   }
+
   public updateFulfillmentTrackingInfo(
     fulfillmentOrderId: string,
     /**
@@ -183,7 +204,7 @@ export class FulfillmentUpdater<
     } else if (typeof fulfillment === 'string') {
       fulfillmentId = fulfillment;
     } else {
-      throw new TypeError('fulfillmentId should be a string');
+      throw new TypeError('fulfillmentId should be a string or a Fulfillment object');
     }
 
     this.fulfillmentsToUpdate.push({
@@ -194,10 +215,93 @@ export class FulfillmentUpdater<
     return this;
   }
 
+  public holdFulfillmentOrder(
+    fulfillmentOrder: string | FulfillmentTypes.FulfillmentOrderToHold,
+    fulfillmentHold: FulfillmentOrderHoldInput) {
+      let fulfillmentOrderId: string;
+
+      if (typeof fulfillmentOrder === 'object') {
+        const lastHold = fulfillmentOrder.fulfillmentHolds.at(-1);
+        if (lastHold?.reason === fulfillmentHold.reason && lastHold?.reasonNotes === fulfillmentHold.reasonNotes) {
+          return this;
+        }
+
+        fulfillmentOrderId = fulfillmentOrder.id;
+      } else if (typeof fulfillmentOrder === 'string') {
+        fulfillmentOrderId = fulfillmentOrder;
+      } else {
+        throw new TypeError('fulfillmentOrderId should be a string or a FulfillmentOrder object');
+      }
+
+    this.fulfillmentOrderToHold.push({
+      fulfillmentHold,
+      id: fulfillmentOrderId,
+    });
+
+    return this;
+  }
+
+  public releaseFulfillmentOrderHolds(fulfillmentOrderIds: string | string[]) {
+    if (typeof fulfillmentOrderIds === 'string') {
+      this.fulfillmentOrdersToRelease.add(fulfillmentOrderIds);
+    } else if (Array.isArray(fulfillmentOrderIds)) {
+      for (const id of fulfillmentOrderIds) {
+        this.fulfillmentOrdersToRelease.add(id);
+      }
+    } else {
+      throw new TypeError('fulfillmentOrderIds should be a string or an array of string');
+    }
+
+    return this;
+  }
+
+  public cancelFulfillmentOrder(fulfillmentOrder: string | FulfillmentTypes.FulfillmentOrder) {
+    let fulfillmentOrderId: string;
+    if (typeof fulfillmentOrder === 'object') {
+      fulfillmentOrderId = fulfillmentOrder.id;
+    } else if (typeof fulfillmentOrder === 'string') {
+    fulfillmentOrderId = fulfillmentOrder;
+    } else {
+      throw new TypeError('fulfillmentOrderId should be a string or a FulfillmentOrder object');
+    }
+  
+    this.fulfillmentOrdersToCancel.push({
+      id: fulfillmentOrderId,
+    });
+
+    return this;
+  }
+
+  // TODO : optimize the method using an array of fulfillmentOrderIds to batch per request sharing the same deadline
+  public setFulfillmentDeadline(fulfillmentOrderIds: string | string[] | FulfillmentTypes.FulfillmentOrder, fulfillmentDeadline: Date) {
+    let fulfillmentOrderId: string;
+    if (Array.isArray(fulfillmentOrderIds)) {
+      // TODO
+      throw new TypeError('fulfillmentOrderIds should be a string or a FulfillmentOrder object');
+    } else if (typeof fulfillmentOrderIds === 'object') {
+      fulfillmentOrderId = fulfillmentOrderIds.id;
+    } else if (typeof fulfillmentOrderIds === 'string') {
+    fulfillmentOrderId = fulfillmentOrderIds;
+    } else {
+      throw new TypeError('fulfillmentOrderIds should be a string or a FulfillmentOrder object');
+    }
+  
+    this.fulfillmentOrdersToSetDeadline.push({
+      fulfillmentDeadline,
+      fulfillmentOrderIds: fulfillmentOrderId,
+    });
+
+    return this;
+  }
+
   public async execute(): Promise<FulfillmentProcessResponse> {
     const responses: FulfillmentProcessResponse = {
       create: null,
       update: null,
+      hold: null,
+      released: null,
+      cancel: null,
+      setDeadline: null,
     };
 
     if (this.fulfillmentsToCreate.length > 0) {
@@ -214,6 +318,34 @@ export class FulfillmentUpdater<
       }
     }
 
+    if (this.fulfillmentOrderToHold.length > 0) {
+      responses.hold = await batchMutation(this.client, FULFILLMENT_ORDER_HOLD, this.fulfillmentOrderToHold);
+      if (responses.hold.errors.length > 0) {
+        responses.hold.errors.forEach(console.error);
+      }
+    }
+
+    if (this.fulfillmentOrdersToRelease.size > 0) {
+      responses.released = await this.client.request<FulfillmentOrdersReleaseHoldsMutation>(FULFILLMENT_ORDER_HOLD_RELEASE)
+      if (responses.released.errors) {
+        console.error(responses.released.errors)
+      }
+    }
+
+    if (this.fulfillmentOrdersToCancel.length > 0) {
+      responses.cancel = await batchMutation(this.client, FULFILLEMENT_ORDER_CANCEL, this.fulfillmentOrderToHold);
+      if (responses.cancel.errors.length > 0) {
+        responses.cancel.errors.forEach(console.error);
+      }
+    }
+
+    if (this.fulfillmentOrdersToSetDeadline.length > 0) {
+      responses.setDeadline = await batchMutation(this.client, FULFILLEMENT_ORDER_SET_DEADLINE, this.fulfillmentOrdersToSetDeadline);
+      if (responses.setDeadline.errors.length > 0) {
+        responses.setDeadline.errors.forEach(console.error);
+      }
+    }
+    
     return responses;
   }
 }
@@ -236,6 +368,7 @@ export const UPDATE_TRACKING_INFO = /* GraphQL */ `
     }
   }
 `;
+
 export const FULFILL_ORDER = /* GraphQL */ `
   mutation FulfillOrders($fulfillment: FulfillmentV2Input!) {
     fulfillmentCreateV2(fulfillment: $fulfillment) {
@@ -248,3 +381,57 @@ export const FULFILL_ORDER = /* GraphQL */ `
     }
   }
 `;
+
+export const FULFILLMENT_ORDER_HOLD = /* GraphQL */ `
+  mutation fulfillmentOrderHold($fulfillmentHold: FulfillmentOrderHoldInput!, $id: ID!) {
+    fulfillmentOrderHold(fulfillmentHold: $fulfillmentHold, id: $id) {
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+export const FULFILLMENT_ORDER_HOLD_RELEASE = /* GraphQL */ `
+  mutation fulfillmentOrdersReleaseHolds($ids: [ID!]!) {
+    fulfillmentOrdersReleaseHolds(ids: $ids) {
+      job {
+        id
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+export const FULFILLEMENT_ORDER_CANCEL = /* GraphQL */ `
+  mutation fulfillmentOrderCancel($id: ID!) {
+    fulfillmentOrderCancel(id: $id) {
+      fulfillmentOrder {
+        id
+      }
+      replacementFulfillmentOrder {
+        id
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+export const FULFILLEMENT_ORDER_SET_DEADLINE = /* GraphQL */ `
+  mutation fulfillmentOrdersSetFulfillmentDeadline($fulfillmentDeadline: DateTime!, $fulfillmentOrderIds: [ID!]!) {
+    fulfillmentOrdersSetFulfillmentDeadline(fulfillmentDeadline: $fulfillmentDeadline, fulfillmentOrderIds: $fulfillmentOrderIds) {
+      success
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`; 

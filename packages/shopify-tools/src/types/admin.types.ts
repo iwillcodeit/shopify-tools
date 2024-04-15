@@ -402,6 +402,39 @@ export type CurrencyCode =
   /** Zambian Kwacha (ZMW). */
   | 'ZMW';
 
+/** The reason for a fulfillment hold. */
+export type FulfillmentHoldReason =
+  /** The fulfillment hold is applied because payment is pending. */
+  | 'AWAITING_PAYMENT'
+  /** The fulfillment hold is applied because of a high risk of fraud. */
+  | 'HIGH_RISK_OF_FRAUD'
+  /** The fulfillment hold is applied because of an incorrect address. */
+  | 'INCORRECT_ADDRESS'
+  /** The fulfillment hold is applied because inventory is out of stock. */
+  | 'INVENTORY_OUT_OF_STOCK'
+  /** The fulfillment hold is applied for another reason. */
+  | 'OTHER'
+  /** The fulfillment hold is applied because of an unknown delivery date. */
+  | 'UNKNOWN_DELIVERY_DATE';
+
+/** The input fields for the fulfillment hold applied on the fulfillment order. */
+export type FulfillmentOrderHoldInput = {
+  /** A configurable ID used to track the automation system releasing these holds. */
+  externalId?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * The fulfillment order line items to be placed on hold.
+   * If left blank, all line items of the fulfillment order are placed on hold.
+   *
+   */
+  fulfillmentOrderLineItems?: InputMaybe<Array<FulfillmentOrderLineItemInput>>;
+  /** Whether the merchant receives a notification about the fulfillment hold. The default value is `false`. */
+  notifyMerchant?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The reason for the fulfillment hold. */
+  reason: FulfillmentHoldReason;
+  /** Additional information about the fulfillment hold reason. */
+  reasonNotes?: InputMaybe<Scalars['String']['input']>;
+};
+
 /**
  * The input fields used to include the quantity of the fulfillment order line item that should be fulfilled.
  *
@@ -651,6 +684,36 @@ export type FulfillOrdersMutationVariables = Exact<{
 
 export type FulfillOrdersMutation = { __typename?: 'Mutation', fulfillmentCreateV2?: { __typename?: 'FulfillmentCreateV2Payload', fulfillment?: { __typename?: 'Fulfillment', id: string } | null, userErrors: Array<{ __typename?: 'UserError', message: string }> } | null };
 
+export type FulfillmentOrderHoldMutationVariables = Exact<{
+  fulfillmentHold: FulfillmentOrderHoldInput;
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type FulfillmentOrderHoldMutation = { __typename?: 'Mutation', fulfillmentOrderHold?: { __typename?: 'FulfillmentOrderHoldPayload', userErrors: Array<{ __typename?: 'FulfillmentOrderHoldUserError', field?: Array<string> | null, message: string }> } | null };
+
+export type FulfillmentOrdersReleaseHoldsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']['input']> | Scalars['ID']['input'];
+}>;
+
+
+export type FulfillmentOrdersReleaseHoldsMutation = { __typename?: 'Mutation', fulfillmentOrdersReleaseHolds?: { __typename?: 'FulfillmentOrdersReleaseHoldsPayload', job?: { __typename?: 'Job', id: string } | null, userErrors: Array<{ __typename?: 'FulfillmentOrdersReleaseHoldsUserError', field?: Array<string> | null, message: string }> } | null };
+
+export type FulfillmentOrderCancelMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type FulfillmentOrderCancelMutation = { __typename?: 'Mutation', fulfillmentOrderCancel?: { __typename?: 'FulfillmentOrderCancelPayload', fulfillmentOrder?: { __typename?: 'FulfillmentOrder', id: string } | null, replacementFulfillmentOrder?: { __typename?: 'FulfillmentOrder', id: string } | null, userErrors: Array<{ __typename?: 'UserError', field?: Array<string> | null, message: string }> } | null };
+
+export type FulfillmentOrdersSetFulfillmentDeadlineMutationVariables = Exact<{
+  fulfillmentDeadline: Scalars['DateTime']['input'];
+  fulfillmentOrderIds: Array<Scalars['ID']['input']> | Scalars['ID']['input'];
+}>;
+
+
+export type FulfillmentOrdersSetFulfillmentDeadlineMutation = { __typename?: 'Mutation', fulfillmentOrdersSetFulfillmentDeadline?: { __typename?: 'FulfillmentOrdersSetFulfillmentDeadlinePayload', success?: boolean | null, userErrors: Array<{ __typename?: 'FulfillmentOrdersSetFulfillmentDeadlineUserError', field?: Array<string> | null, message: string }> } | null };
+
 export type OrderEditBeginMutationVariables = Exact<{
   orderId: Scalars['ID']['input'];
 }>;
@@ -721,4 +784,4 @@ export type GetOrdersFulfillmentsQueryVariables = Exact<{
 }>;
 
 
-export type GetOrdersFulfillmentsQuery = { __typename?: 'QueryRoot', fulfillmentOrder?: { __typename?: 'FulfillmentOrder', id: string, fulfillments: { __typename?: 'FulfillmentConnection', edges: Array<{ __typename?: 'FulfillmentEdge', node: { __typename?: 'Fulfillment', id: string, trackingInfo: Array<{ __typename?: 'FulfillmentTrackingInfo', company?: string | null, number?: string | null, url?: any | null }>, fulfillmentLineItems: { __typename?: 'FulfillmentLineItemConnection', edges: Array<{ __typename?: 'FulfillmentLineItemEdge', node: { __typename?: 'FulfillmentLineItem', id: string, quantity?: number | null, lineItem: { __typename?: 'LineItem', id: string } } }> } } }> } } | null };
+export type GetOrdersFulfillmentsQuery = { __typename?: 'QueryRoot', fulfillmentOrder?: { __typename?: 'FulfillmentOrder', id: string, fulfillmentHolds: Array<{ __typename?: 'FulfillmentHold', reason: FulfillmentHoldReason, reasonNotes?: string | null }>, fulfillments: { __typename?: 'FulfillmentConnection', edges: Array<{ __typename?: 'FulfillmentEdge', node: { __typename?: 'Fulfillment', id: string, trackingInfo: Array<{ __typename?: 'FulfillmentTrackingInfo', company?: string | null, number?: string | null, url?: any | null }>, fulfillmentLineItems: { __typename?: 'FulfillmentLineItemConnection', edges: Array<{ __typename?: 'FulfillmentLineItemEdge', node: { __typename?: 'FulfillmentLineItem', id: string, quantity?: number | null, lineItem: { __typename?: 'LineItem', id: string } } }> } } }> } } | null };

@@ -7,6 +7,10 @@ export const GET_ORDERS_FULFILLMENTS = /* GraphQL */ `
   query GetOrdersFulfillments($id: ID!) {
     fulfillmentOrder(id: $id) {
       id
+      fulfillmentHolds {
+        reason
+        reasonNotes
+      }
       fulfillments {
         edges {
           node {
@@ -36,7 +40,11 @@ export const GET_ORDERS_FULFILLMENTS = /* GraphQL */ `
 
 export type FulfillmentOrder = Omit<
   Exclude<GetOrdersFulfillmentsQuery['fulfillmentOrder'], null | undefined>,
-  'fulfillments'
+  'fulfillments' | 'fulfillmentHolds'
+>;
+export type FulfillmentOrderToHold = Pick<
+  Exclude<GetOrdersFulfillmentsQuery['fulfillmentOrder'], null | undefined>,
+  'id' | 'fulfillmentHolds'
 >;
 export type Fulfillment = Omit<
   Exclude<GetOrdersFulfillmentsQuery['fulfillmentOrder'], null | undefined>['fulfillments']['edges'][number]['node'],
