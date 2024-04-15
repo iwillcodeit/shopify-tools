@@ -402,6 +402,192 @@ export type CurrencyCode =
   /** Zambian Kwacha (ZMW). */
   | 'ZMW';
 
+/**
+ * The input fields used to include the quantity of the fulfillment order line item that should be fulfilled.
+ *
+ */
+export type FulfillmentOrderLineItemInput = {
+  /** The ID of the fulfillment order line item. */
+  id: Scalars['ID']['input'];
+  /** The quantity of the fulfillment order line item. */
+  quantity: Scalars['Int']['input'];
+};
+
+/**
+ * The input fields used to include the line items of a specified fulfillment order that should be fulfilled.
+ *
+ */
+export type FulfillmentOrderLineItemsInput = {
+  /** The ID of the fulfillment order. */
+  fulfillmentOrderId: Scalars['ID']['input'];
+  /**
+   * The fulfillment order line items to be fulfilled.
+   * If left blank, all line items of the fulfillment order will be fulfilled.
+   *
+   */
+  fulfillmentOrderLineItems?: InputMaybe<Array<FulfillmentOrderLineItemInput>>;
+};
+
+/** The input fields used to include the address at which the fulfillment occurred. This input object is intended for tax purposes, as a full address is required for tax providers to accurately calculate taxes. Typically this is the address of the warehouse or fulfillment center. To retrieve a fulfillment location's address, use the `assignedLocation` field on the [`FulfillmentOrder`](/docs/api/admin-graphql/latest/objects/FulfillmentOrder) object instead. */
+export type FulfillmentOriginAddressInput = {
+  /** The street address of the fulfillment location. */
+  address1?: InputMaybe<Scalars['String']['input']>;
+  /** The second line of the address. Typically the number of the apartment, suite, or unit. */
+  address2?: InputMaybe<Scalars['String']['input']>;
+  /** The city in which the fulfillment location is located. */
+  city?: InputMaybe<Scalars['String']['input']>;
+  /** The country of the fulfillment location. */
+  countryCode: Scalars['String']['input'];
+  /** The province of the fulfillment location. */
+  provinceCode?: InputMaybe<Scalars['String']['input']>;
+  /** The zip code of the fulfillment location. */
+  zip?: InputMaybe<Scalars['String']['input']>;
+};
+
+/**
+ * The input fields that specify all possible fields for tracking information.
+ *
+ * > Note:
+ * > If you provide the `url` field, you should not provide the `urls` field.
+ * >
+ * > If you provide the `number` field, you should not provide the `numbers` field.
+ * >
+ * > If you provide the `url` field, you should provide the `number` field.
+ * >
+ * > If you provide the `urls` field, you should provide the `numbers` field.
+ *
+ */
+export type FulfillmentTrackingInput = {
+  /**
+   * The name of the tracking company.
+   *
+   * If you specify a tracking company name from
+   * [the list](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#supported-tracking-companies),
+   * Shopify will automatically build tracking URLs for all provided tracking numbers,
+   * which will make the tracking numbers clickable in the interface.
+   * The same tracking company will be applied to all tracking numbers specified.
+   *
+   * Additionally, for the tracking companies listed on the
+   * [Shipping Carriers help page](https://help.shopify.com/manual/shipping/understanding-shipping/shipping-carriers#integrated-shipping-carriers)
+   * Shopify will automatically update the fulfillment's `shipment_status` field during the fulfillment process.
+   *
+   * > Note:
+   * > Send the tracking company name exactly as written in
+   * > [the list](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#supported-tracking-companies)
+   * > (capitalization matters).
+   *
+   */
+  company?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * The tracking number of the fulfillment.
+   *
+   * The tracking number will be clickable in the interface if one of the following applies
+   * (the highest in the list has the highest priority):
+   *
+   * * Tracking url provided in the `url` field.
+   * * [Shopify-known tracking company name](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#supported-tracking-companies)
+   *   specified in the `company` field.
+   *   Shopify will build the tracking URL automatically based on the tracking number specified.
+   * * The tracking number has a Shopify-known format.
+   *   Shopify will guess the tracking provider and build the tracking url based on the tracking number format.
+   *   Not all tracking carriers are supported, and multiple tracking carriers may use similarly formatted tracking numbers.
+   *   This can result in an invalid tracking URL.
+   *   It is highly recommended that you send the tracking company and the tracking URL.
+   *
+   */
+  number?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * The tracking numbers of the fulfillment, one or many.
+   *
+   * With multiple tracking numbers, you can provide tracking information
+   * for all shipments associated with the fulfillment, if there are more than one.
+   * For example, if you're shipping assembly parts of one furniture item in several boxes.
+   *
+   * Tracking numbers will be clickable in the interface if one of the following applies
+   * (the highest in the list has the highest priority):
+   *
+   * * Tracking URLs provided in the `urls` field.
+   *   The tracking URLs will be matched to the tracking numbers based on their positions in the arrays.
+   * * [Shopify-known tracking company name](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#supported-tracking-companies)
+   *   specified in the `company` field.
+   *   Shopify will build tracking URLs automatically for all tracking numbers specified.
+   *   The same tracking company will be applied to all tracking numbers.
+   * * Tracking numbers have a Shopify-known format.
+   *   Shopify will guess tracking providers and build tracking URLs based on the tracking number formats.
+   *   Not all tracking carriers are supported, and multiple tracking carriers may use similarly formatted tracking numbers.
+   *   This can result in an invalid tracking URL.
+   *   It is highly recommended that you send the tracking company and the tracking URLs.
+   *
+   *
+   */
+  numbers?: InputMaybe<Array<Scalars['String']['input']>>;
+  /**
+   * The URL to track the fulfillment.
+   *
+   * The tracking URL is displayed in the merchant's admin on the order page.
+   * The tracking URL is displayed in the shipping confirmation email, which can optionally be sent to the customer.
+   * When accounts are enabled, it's also displayed in the customer's order history.
+   *
+   * The URL must be an [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986) and
+   * [RFC 3987](https://datatracker.ietf.org/doc/html/rfc3987)-compliant URI string.
+   * For example, `"https://www.myshipping.com/track/?tracknumbers=TRACKING_NUMBER"` is a valid URL.
+   * It includes a scheme (`https`) and a host (`myshipping.com`).
+   *
+   */
+  url?: InputMaybe<Scalars['URL']['input']>;
+  /**
+   * The URLs to track the fulfillment, one or many.
+   *
+   * The tracking URLs are displayed in the merchant's admin on the order page.
+   * The tracking URLs are displayed in the shipping confirmation email, which can optionally be sent to the customer.
+   * When accounts are enabled, the tracking URLs are also displayed in the customer's order history.
+   *
+   * If you're not specifying a
+   * [Shopify-known](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#supported-tracking-companies)
+   * tracking company name in the `company` field,
+   * then provide tracking URLs for all tracking numbers from the `numbers` field.
+   *
+   * Tracking URLs from the `urls` array field are being matched with the tracking numbers from the `numbers` array
+   * field correspondingly their positions in the arrays.
+   *
+   * Each URL must be an [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986) and
+   * [RFC 3987](https://datatracker.ietf.org/doc/html/rfc3987)-compliant URI string.
+   * For example, `"https://www.myshipping.com/track/?tracknumbers=TRACKING_NUMBER"` is a valid URL.
+   * It includes a scheme (`https`) and a host (`myshipping.com`).
+   *
+   */
+  urls?: InputMaybe<Array<Scalars['URL']['input']>>;
+};
+
+/** The input fields used to create a fulfillment from fulfillment orders. */
+export type FulfillmentV2Input = {
+  /**
+   * Pairs of `fulfillment_order_id` and `fulfillment_order_line_items` that represent the fulfillment
+   * order line items that have to be fulfilled for each fulfillment order.  For any given pair, if the
+   * fulfillment order line items are left blank then all the fulfillment order line items of the
+   * associated fulfillment order ID will be fulfilled.
+   *
+   */
+  lineItemsByFulfillmentOrder: Array<FulfillmentOrderLineItemsInput>;
+  /**
+   * Whether the customer is notified.
+   * If `true`, then a notification is sent when the fulfillment is created. The default value is `false`.
+   *
+   */
+  notifyCustomer?: InputMaybe<Scalars['Boolean']['input']>;
+  /**
+   * Address information about the location from which the order was fulfilled.
+   *
+   */
+  originAddress?: InputMaybe<FulfillmentOriginAddressInput>;
+  /**
+   * The fulfillment's tracking information, including a tracking URL, a tracking number,
+   * and the company associated with the fulfillment.
+   *
+   */
+  trackingInfo?: InputMaybe<FulfillmentTrackingInput>;
+};
+
 /** The input fields for a monetary value with currency. */
 export type MoneyInput = {
   /** Decimal money amount. */
@@ -448,6 +634,22 @@ export type GetBulkStatusQueryVariables = Exact<{
 
 
 export type GetBulkStatusQuery = { __typename?: 'QueryRoot', node?: { __typename: 'AbandonedCheckout' } | { __typename: 'Abandonment' } | { __typename: 'AddAllProductsOperation' } | { __typename: 'AdditionalFee' } | { __typename: 'App' } | { __typename: 'AppCatalog' } | { __typename: 'AppCredit' } | { __typename: 'AppInstallation' } | { __typename: 'AppPurchaseOneTime' } | { __typename: 'AppRevenueAttributionRecord' } | { __typename: 'AppSubscription' } | { __typename: 'AppUsageRecord' } | { __typename: 'BasicEvent' } | { __typename: 'BulkOperation', id: string, status: BulkOperationStatus, errorCode?: BulkOperationErrorCode | null, url?: any | null, objectCount: any, rootObjectCount: any } | { __typename: 'CalculatedOrder' } | { __typename: 'CatalogCsvOperation' } | { __typename: 'Channel' } | { __typename: 'ChannelDefinition' } | { __typename: 'ChannelInformation' } | { __typename: 'CheckoutProfile' } | { __typename: 'Collection' } | { __typename: 'CommentEvent' } | { __typename: 'Company' } | { __typename: 'CompanyAddress' } | { __typename: 'CompanyContact' } | { __typename: 'CompanyContactRole' } | { __typename: 'CompanyContactRoleAssignment' } | { __typename: 'CompanyLocation' } | { __typename: 'CompanyLocationCatalog' } | { __typename: 'Customer' } | { __typename: 'CustomerPaymentMethod' } | { __typename: 'CustomerSegmentMembersQuery' } | { __typename: 'CustomerVisit' } | { __typename: 'DeliveryCarrierService' } | { __typename: 'DeliveryCondition' } | { __typename: 'DeliveryCountry' } | { __typename: 'DeliveryCustomization' } | { __typename: 'DeliveryLocationGroup' } | { __typename: 'DeliveryMethod' } | { __typename: 'DeliveryMethodDefinition' } | { __typename: 'DeliveryParticipant' } | { __typename: 'DeliveryProfile' } | { __typename: 'DeliveryProfileItem' } | { __typename: 'DeliveryProvince' } | { __typename: 'DeliveryRateDefinition' } | { __typename: 'DeliveryZone' } | { __typename: 'DiscountAutomaticBxgy' } | { __typename: 'DiscountAutomaticNode' } | { __typename: 'DiscountCodeNode' } | { __typename: 'DiscountNode' } | { __typename: 'DiscountRedeemCodeBulkCreation' } | { __typename: 'Domain' } | { __typename: 'DraftOrder' } | { __typename: 'DraftOrderLineItem' } | { __typename: 'DraftOrderTag' } | { __typename: 'Duty' } | { __typename: 'ExternalVideo' } | { __typename: 'Fulfillment' } | { __typename: 'FulfillmentEvent' } | { __typename: 'FulfillmentLineItem' } | { __typename: 'FulfillmentOrder' } | { __typename: 'FulfillmentOrderDestination' } | { __typename: 'FulfillmentOrderLineItem' } | { __typename: 'FulfillmentOrderMerchantRequest' } | { __typename: 'GenericFile' } | { __typename: 'GiftCard' } | { __typename: 'InventoryAdjustmentGroup' } | { __typename: 'InventoryItem' } | { __typename: 'InventoryLevel' } | { __typename: 'LineItem' } | { __typename: 'LineItemMutable' } | { __typename: 'Location' } | { __typename: 'MailingAddress' } | { __typename: 'Market' } | { __typename: 'MarketCatalog' } | { __typename: 'MarketRegionCountry' } | { __typename: 'MarketWebPresence' } | { __typename: 'MarketingActivity' } | { __typename: 'MarketingEvent' } | { __typename: 'MediaImage' } | { __typename: 'Metafield' } | { __typename: 'MetafieldDefinition' } | { __typename: 'MetafieldStorefrontVisibility' } | { __typename: 'Metaobject' } | { __typename: 'MetaobjectDefinition' } | { __typename: 'Model3d' } | { __typename: 'OnlineStoreArticle' } | { __typename: 'OnlineStoreBlog' } | { __typename: 'OnlineStorePage' } | { __typename: 'Order' } | { __typename: 'OrderDisputeSummary' } | { __typename: 'OrderTransaction' } | { __typename: 'PaymentCustomization' } | { __typename: 'PaymentMandate' } | { __typename: 'PaymentSchedule' } | { __typename: 'PaymentTerms' } | { __typename: 'PaymentTermsTemplate' } | { __typename: 'PriceList' } | { __typename: 'PriceRule' } | { __typename: 'PriceRuleDiscountCode' } | { __typename: 'PrivateMetafield' } | { __typename: 'Product' } | { __typename: 'ProductOption' } | { __typename: 'ProductTaxonomyNode' } | { __typename: 'ProductVariant' } | { __typename: 'Publication' } | { __typename: 'PublicationResourceOperation' } | { __typename: 'Refund' } | { __typename: 'Return' } | { __typename: 'ReturnLineItem' } | { __typename: 'ReturnableFulfillment' } | { __typename: 'ReverseDelivery' } | { __typename: 'ReverseDeliveryLineItem' } | { __typename: 'ReverseFulfillmentOrder' } | { __typename: 'ReverseFulfillmentOrderDisposition' } | { __typename: 'ReverseFulfillmentOrderLineItem' } | { __typename: 'SavedSearch' } | { __typename: 'ScriptTag' } | { __typename: 'Segment' } | { __typename: 'SellingPlan' } | { __typename: 'SellingPlanGroup' } | { __typename: 'ServerPixel' } | { __typename: 'Shop' } | { __typename: 'ShopAddress' } | { __typename: 'ShopPolicy' } | { __typename: 'ShopifyPaymentsAccount' } | { __typename: 'ShopifyPaymentsBankAccount' } | { __typename: 'ShopifyPaymentsDispute' } | { __typename: 'ShopifyPaymentsDisputeEvidence' } | { __typename: 'ShopifyPaymentsDisputeFileUpload' } | { __typename: 'ShopifyPaymentsDisputeFulfillment' } | { __typename: 'ShopifyPaymentsPayout' } | { __typename: 'ShopifyPaymentsVerification' } | { __typename: 'StaffMember' } | { __typename: 'StandardMetafieldDefinitionTemplate' } | { __typename: 'StorefrontAccessToken' } | { __typename: 'SubscriptionBillingAttempt' } | { __typename: 'SubscriptionContract' } | { __typename: 'SubscriptionDraft' } | { __typename: 'TenderTransaction' } | { __typename: 'TransactionFee' } | { __typename: 'UrlRedirect' } | { __typename: 'UrlRedirectImport' } | { __typename: 'Video' } | { __typename: 'WebPixel' } | { __typename: 'WebhookSubscription' } | null };
+
+export type UpdateTrackingInfoMutationVariables = Exact<{
+  fulfillmentId: Scalars['ID']['input'];
+  trackingInfo: FulfillmentTrackingInput;
+  notifyCustomer?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+
+export type UpdateTrackingInfoMutation = { __typename?: 'Mutation', fulfillmentTrackingInfoUpdateV2?: { __typename?: 'FulfillmentTrackingInfoUpdateV2Payload', userErrors: Array<{ __typename?: 'UserError', field?: Array<string> | null, message: string }> } | null };
+
+export type FulfillOrdersMutationVariables = Exact<{
+  fulfillment: FulfillmentV2Input;
+}>;
+
+
+export type FulfillOrdersMutation = { __typename?: 'Mutation', fulfillmentCreateV2?: { __typename?: 'FulfillmentCreateV2Payload', fulfillment?: { __typename?: 'Fulfillment', id: string } | null, userErrors: Array<{ __typename?: 'UserError', message: string }> } | null };
 
 export type OrderEditBeginMutationVariables = Exact<{
   orderId: Scalars['ID']['input'];
@@ -513,3 +715,10 @@ export type OrderEditSetQuantityMutationVariables = Exact<{
 
 
 export type OrderEditSetQuantityMutation = { __typename?: 'Mutation', orderEditSetQuantity?: { __typename?: 'OrderEditSetQuantityPayload', userErrors: Array<{ __typename?: 'UserError', field?: Array<string> | null, message: string }> } | null };
+
+export type GetOrdersFulfillmentsQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetOrdersFulfillmentsQuery = { __typename?: 'QueryRoot', fulfillmentOrder?: { __typename?: 'FulfillmentOrder', id: string, fulfillments: { __typename?: 'FulfillmentConnection', edges: Array<{ __typename?: 'FulfillmentEdge', node: { __typename?: 'Fulfillment', id: string, trackingInfo: Array<{ __typename?: 'FulfillmentTrackingInfo', company?: string | null, number?: string | null, url?: any | null }>, fulfillmentLineItems: { __typename?: 'FulfillmentLineItemConnection', edges: Array<{ __typename?: 'FulfillmentLineItemEdge', node: { __typename?: 'FulfillmentLineItem', id: string, quantity?: number | null, lineItem: { __typename?: 'LineItem', id: string } } }> } } }> } } | null };

@@ -1,4 +1,3 @@
-import { ApiType, pluckConfig, preset } from '@shopify/api-codegen-preset';
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
 export default {
@@ -15,43 +14,16 @@ export default {
         codegen: {
           generates: {
             './packages/shopify-tools/src/types/admin.types.ts': {
-              // plugins: ['typescript', 'typescript-operations'],
               plugins: ['graphql-codegen-typescript-operation-types', 'typescript-operations'],
               config: {
                 enumsAsTypes: true,
                 omitObjectTypes: true,
                 preResolveTypes: true,
-                // flattenGeneratedTypes: true,
-                // flattenGeneratedTypesIncludeFragments: true,
               },
             },
-            // './packages/shopify-tools/src/types/admin.generated.ts': {
-            //   preset: 'near-operation-file',
-            //   plugins: ['typescript-operations'],
-            //   presetConfig: {
-            //     baseTypesPath: './admin.types',
-            //   },
-            //   config: {
-            //     preResolveTypes: true,
-            //     addOperationExport: true,
-            //   },
-            // },
-            // './packages/shopify-tools/src/types/admin.generated.d.ts': {
-            //   preset,
-            //   presetConfig: {
-            //     apiType: ApiType.Admin,
-            //   },
-            // },
           },
         } as CodegenConfig,
       },
     },
-
-    // default: shopifyApiProject({
-    //   apiType: ApiType.Admin,
-    //   apiVersion: '2024-01',
-    //   documents: [`./packages/shopify-tools/src/**/*.{js,ts,jsx,tsx}`],
-    //   outputDir: `./packages/shopify-tools/src/types`,
-    // }),
   },
 };
