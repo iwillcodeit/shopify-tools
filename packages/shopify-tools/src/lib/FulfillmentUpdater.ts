@@ -217,7 +217,8 @@ export class FulfillmentUpdater<
 
   public holdFulfillmentOrder(
     fulfillmentOrder: string | FulfillmentTypes.FulfillmentOrderToHold,
-    fulfillmentHold: FulfillmentOrderHoldInput) {
+    fulfillmentHold: FulfillmentOrderHoldInput
+  ) {
       let fulfillmentOrderId: string;
 
       if (typeof fulfillmentOrder === 'object') {
@@ -326,14 +327,14 @@ export class FulfillmentUpdater<
     }
 
     if (this.fulfillmentOrdersToRelease.size > 0) {
-      responses.released = await this.client.request<FulfillmentOrdersReleaseHoldsMutation>(FULFILLMENT_ORDER_HOLD_RELEASE)
+      responses.released = await this.client.request<FulfillmentOrdersReleaseHoldsMutation>(FULFILLMENT_ORDER_HOLD_RELEASE);
       if (responses.released.errors) {
         console.error(responses.released.errors)
       }
     }
 
     if (this.fulfillmentOrdersToCancel.length > 0) {
-      responses.cancel = await batchMutation(this.client, FULFILLEMENT_ORDER_CANCEL, this.fulfillmentOrderToHold);
+      responses.cancel = await batchMutation(this.client, FULFILLEMENT_ORDER_CANCEL, this.fulfillmentOrdersToCancel);
       if (responses.cancel.errors.length > 0) {
         responses.cancel.errors.forEach(console.error);
       }

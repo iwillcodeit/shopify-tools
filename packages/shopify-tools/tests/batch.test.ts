@@ -48,6 +48,6 @@ describe('prepareBatchMutation', () => {
       { someId: 'id2', tags: ['abc', 'def'] },
     ]);
 
-    console.dir(queries, { depth: null });
+    // console.dir(queries, { depth: null });
   });
 });
