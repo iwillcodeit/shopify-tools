@@ -1,4 +1,4 @@
-import { describe, expect, beforeEach, it, vi } from 'vitest';
+import { describe, expect, beforeEach, afterEach, it, vi } from 'vitest';
 import * as batch from '../src/lib/batch';
 import * as shopifyApi from '@shopify/admin-api-client';
 const { createAdminApiClient } = shopifyApi;
@@ -34,7 +34,6 @@ const apiClient = createAdminApiClient({
 import {
   FulfillmentUpdater,
   FULFILLMENT_ORDER_HOLD,
-  FULFILLMENT_ORDER_HOLD_RELEASE,
   FULFILLMENT_ORDER_CANCEL,
   FULFILLMENT_ORDER_SET_DEADLINE,
 } from '../src/lib/FulfillmentUpdater';

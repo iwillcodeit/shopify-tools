@@ -1,4 +1,4 @@
-import { describe, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { prepareBulkOperation } from '../src';
 
 describe('prepareBulkOperation', () => {
@@ -16,7 +16,7 @@ describe('prepareBulkOperation', () => {
       }
     `;
 
-    const query = prepareBulkOperation(queryStr);
+    const query = prepareBulkOperation(queryStr, []);
 
     expect(query).toEqual(queryStr);
   });
@@ -34,7 +34,7 @@ describe('prepareBulkOperation', () => {
       }
     `;
 
-    expect(() => prepareBulkOperation(queryStr)).toThrow('Missing variables: id');
+    expect(() => prepareBulkOperation(queryStr, [])).toThrow('Missing variables: id');
   });
   it('with variables but missing argument', () => {
     const queryStr = /** GraphQL */ `
@@ -70,7 +70,7 @@ describe('prepareBulkOperation', () => {
       }
     `;
 
-    const result = prepareBulkOperation(queryStr);
+    const result = prepareBulkOperation(queryStr, []);
 
     expect(result).toEqual(`query test {
   order(id: "foo") {

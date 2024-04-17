@@ -1,4 +1,4 @@
-import { describe, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { EnumValue, parseValue } from '../src/utils/graphql';
 import { Kind } from 'graphql/language/kinds';
 import {
