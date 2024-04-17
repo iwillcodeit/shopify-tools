@@ -1,3 +1,15 @@
+## 2.6.0-0 (2024-04-17)
+
+
+### 🚀 Features
+
+- improve fulfullment comparison
+
+
+### ❤️  Thank You
+
+- Octanium
+
 ## 2.5.0 (2024-03-29)
 
 
