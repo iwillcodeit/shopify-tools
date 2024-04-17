@@ -11,6 +11,7 @@ export const GET_ORDERS_FULFILLMENTS = /* GraphQL */ `
         reason
         reasonNotes
       }
+      status
       fulfillments {
         edges {
           node {
@@ -38,19 +39,7 @@ export const GET_ORDERS_FULFILLMENTS = /* GraphQL */ `
   }
 `;
 
-export type FulfillmentOrder = Omit<
-  Exclude<GetOrdersFulfillmentsQuery['fulfillmentOrder'], null | undefined>,
-  'fulfillments' | 'fulfillmentHolds'
->;
-export type FulfillmentOrderToHold = Pick<
-  Exclude<GetOrdersFulfillmentsQuery['fulfillmentOrder'], null | undefined>,
-  'id' | 'fulfillmentHolds'
->;
-export type Fulfillment = Omit<
-  Exclude<GetOrdersFulfillmentsQuery['fulfillmentOrder'], null | undefined>['fulfillments']['edges'][number]['node'],
-  'fulfillmentLineItems'
->;
-export type FulfillmentLineItem = Exclude<
-  GetOrdersFulfillmentsQuery['fulfillmentOrder'],
-  null | undefined
->['fulfillments']['edges'][number]['node']['fulfillmentLineItems']['edges'][number]['node'];
+export type FulfillmentOrder = Exclude<GetOrdersFulfillmentsQuery['fulfillmentOrder'], null | undefined>;
+export type Fulfillment = FulfillmentOrder['fulfillments']['edges'][number]['node'];
+export type TrackingInfo = Fulfillment['trackingInfo'][number];
+export type FulfillmentLineItem = Fulfillment['fulfillmentLineItems']['edges'][number]['node'];

@@ -7,3 +7,7 @@ export type DeepMutable<T> = {
 };
 
 export type BulkOperation = BulkOperationFragment;
+
+export type RequireField<T extends Record<string, any>, R extends keyof T, P extends keyof T> = Pick<Partial<T>, P> &
+  Pick<T, R> &
+  Record<string, any>;
