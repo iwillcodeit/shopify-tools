@@ -1,3 +1,15 @@
+## 2.7.0-0 (2024-04-17)
+
+
+### 🚀 Features
+
+- export fulfillment updater
+
+
+### ❤️  Thank You
+
+- Octanium
+
 ## 2.6.0-0 (2024-04-17)
 
 
