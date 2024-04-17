@@ -20,7 +20,7 @@ export default defineConfig({
     cache: {
       dir: '../../node_modules/.vitest',
     },
-    environment: 'jsdom',
+    environment: 'node',
     include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
   },
 });

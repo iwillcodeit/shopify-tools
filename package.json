@@ -41,7 +41,6 @@
     "eslint": "8.48.0",
     "eslint-config-prettier": "9.1.0",
     "graphql-codegen-typescript-operation-types": "^2.0.1",
-    "jsdom": "~22.1.0",
     "node-cache": "^5.1.2",
     "nx": "18.1.2",
     "prettier": "^2.6.2",
