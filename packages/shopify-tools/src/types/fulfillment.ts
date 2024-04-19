@@ -21,17 +21,6 @@ export const GET_ORDERS_FULFILLMENTS = /* GraphQL */ `
               number
               url
             }
-            fulfillmentLineItems {
-              edges {
-                node {
-                  id
-                  quantity
-                  lineItem {
-                    id
-                  }
-                }
-              }
-            }
           }
         }
       }
@@ -42,4 +31,3 @@ export const GET_ORDERS_FULFILLMENTS = /* GraphQL */ `
 export type FulfillmentOrder = Exclude<GetOrdersFulfillmentsQuery['fulfillmentOrder'], null | undefined>;
 export type Fulfillment = FulfillmentOrder['fulfillments']['edges'][number]['node'];
 export type TrackingInfo = Fulfillment['trackingInfo'][number];
-export type FulfillmentLineItem = Fulfillment['fulfillmentLineItems']['edges'][number]['node'];

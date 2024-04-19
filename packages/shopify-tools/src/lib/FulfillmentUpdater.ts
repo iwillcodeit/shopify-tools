@@ -1,3 +1,5 @@
+import { ApiClient, ClientResponse } from '@shopify/graphql-client';
+import { RequireField } from '../types';
 import {
   FulfillmentOrderCancelMutation,
   FulfillmentOrderCancelMutationVariables,
@@ -15,12 +17,10 @@ import {
   UpdateTrackingInfoMutation,
   UpdateTrackingInfoMutationVariables,
 } from '../types/admin.types';
-import { ApiClient, ClientResponse } from '@shopify/graphql-client';
-import { DeferredPromise } from '../utils/DeferredPromise';
-import { ApiClientBatchRequestResponse, batchMutation } from './batch';
 import * as FulfillmentTypes from '../types/fulfillment';
+import { DeferredPromise } from '../utils/DeferredPromise';
 import { compareTrackingInfo } from '../utils/fulfillments';
-import { RequireField } from '../types';
+import { ApiClientBatchRequestResponse, batchMutation } from './batch';
 
 export interface FulfillmentProcessResponse {
   create: ApiClientBatchRequestResponse<FulfillOrdersMutation> | null | undefined;
@@ -317,6 +317,26 @@ export class FulfillmentUpdater<
       setDeadline: null,
     };
 
+    if (this.fulfillmentOrdersToRelease.size > 0) {
+      responses.released = await this.client.request<FulfillmentOrdersReleaseHoldsMutation>(
+        FULFILLMENT_ORDER_HOLD_RELEASE
+      );
+      if (responses.released.errors) {
+        console.error(responses.released.errors);
+      }
+    }
+
+    if (this.fulfillmentOrdersToSetDeadline.length > 0) {
+      responses.setDeadline = await batchMutation(
+        this.client,
+        FULFILLMENT_ORDER_SET_DEADLINE,
+        this.fulfillmentOrdersToSetDeadline
+      );
+      if (responses.setDeadline.errors.length > 0) {
+        responses.setDeadline.errors.forEach(console.error);
+      }
+    }
+
     if (this.fulfillmentsToCreate.length > 0) {
       responses.create = await batchMutation(this.client, FULFILL_ORDER, this.fulfillmentsToCreate);
       if (responses.create.errors.length > 0) {
@@ -338,30 +358,10 @@ export class FulfillmentUpdater<
       }
     }
 
-    if (this.fulfillmentOrdersToRelease.size > 0) {
-      responses.released = await this.client.request<FulfillmentOrdersReleaseHoldsMutation>(
-        FULFILLMENT_ORDER_HOLD_RELEASE
-      );
-      if (responses.released.errors) {
-        console.error(responses.released.errors);
-      }
-    }
-
     if (this.fulfillmentOrdersToCancel.length > 0) {
       responses.cancel = await batchMutation(this.client, FULFILLMENT_ORDER_CANCEL, this.fulfillmentOrdersToCancel);
       if (responses.cancel.errors.length > 0) {
         responses.cancel.errors.forEach(console.error);
-      }
-    }
-
-    if (this.fulfillmentOrdersToSetDeadline.length > 0) {
-      responses.setDeadline = await batchMutation(
-        this.client,
-        FULFILLMENT_ORDER_SET_DEADLINE,
-        this.fulfillmentOrdersToSetDeadline
-      );
-      if (responses.setDeadline.errors.length > 0) {
-        responses.setDeadline.errors.forEach(console.error);
       }
     }
 
