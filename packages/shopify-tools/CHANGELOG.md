@@ -1,3 +1,15 @@
+## 2.7.1-1 (2024-04-19)
+
+
+### 🚀 Features
+
+- remove unused type and release hold first when executing fulfillment update
+
+
+### ❤️  Thank You
+
+- Octanium
+
 ## 2.7.1-0 (2024-04-17)
 
 This was a version bump only for shopify-tools to align it with other projects, there were no code changes.
