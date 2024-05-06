@@ -15,7 +15,6 @@
   "module": "./index.mjs",
   "main": "./index.cjs",
   "dependencies": {
-    "@swc/helpers": "~0.5.2",
     "debug": "*",
     "nanoid": "*"
   },
