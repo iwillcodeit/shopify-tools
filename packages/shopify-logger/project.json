@@ -1,0 +1,58 @@
+{
+  "name": "shopify-logger",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/shopify-logger/src",
+  "projectType": "library",
+  "targets": {
+    "generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm run graphql-codegen"
+      }
+    },
+    "build": {
+      "executor": "@nx/rollup:rollup",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "main": "packages/shopify-logger/src/index.ts",
+        "outputPath": "dist/packages/shopify-logger",
+        "tsConfig": "packages/shopify-logger/tsconfig.lib.json",
+        "compiler": "tsc",
+        "project": "packages/shopify-logger/package.json",
+        "format": ["esm", "cjs"],
+        "external": "all",
+        "rollupConfig": "packages/shopify-logger/rollup.config.cjs",
+        "assets": [
+          {
+            "glob": "packages/shopify-logger/README.md",
+            "input": ".",
+            "output": "."
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/packages/shopify-logger"
+      }
+    }
+  },
+  "tags": []
+}
