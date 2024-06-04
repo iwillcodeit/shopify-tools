@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@iwci/npm-js": ["packages/npm-js/src/index.ts"],
+      "@iwci/shopify-app-utils": ["packages/shopify-app-utils/src/index.ts"],
+      "@iwci/shopify-logger": ["packages/shopify-logger/src/index.ts"],
       "@iwci/shopify-tools": ["packages/shopify-tools/src/index.ts"]
     }
   },
