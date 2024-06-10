@@ -1,3 +1,7 @@
+## 2.7.3 (2024-06-10)
+
+This was a version bump only for shopify-tools to align it with other projects, there were no code changes.
+
 ## 2.7.2 (2024-06-10)
 
 
