@@ -1,3 +1,15 @@
+## 2.7.2 (2024-06-10)
+
+
+### 🩹 Fixes
+
+- don't add variable to missing variables if it nullable
+
+
+### ❤️  Thank You
+
+- Octanium
+
 ## 2.7.1 (2024-05-06)
 
 This was a version bump only for shopify-tools to align it with other projects, there were no code changes.
