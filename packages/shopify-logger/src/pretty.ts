@@ -1,7 +1,7 @@
-import { blue, gray, green, red, redBright, yellow } from "colorette";
-import pinoPretty from "pino-pretty";
-import type { PinoReq } from "./serializer/req";
-import type { PinoRes } from "./serializer/res";
+import { blue, gray, green, red, redBright, yellow } from 'colorette';
+import pinoPretty, { PrettyOptions } from 'pino-pretty';
+import type { PinoReq } from './serializer/req';
+import type { PinoRes } from './serializer/res';
 
 function colorStatusCode(code: number) {
   if (code >= 400 && code < 500) {
@@ -14,18 +14,16 @@ function colorStatusCode(code: number) {
   return green(code);
 }
 
-function colorMethod(
-  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | string,
-) {
+function colorMethod(method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | string) {
   switch (method.toUpperCase()) {
-    case "GET":
+    case 'GET':
       return blue(method);
-    case "POST":
+    case 'POST':
       return green(method);
-    case "PUT":
-    case "PATCH":
+    case 'PUT':
+    case 'PATCH':
       return yellow(method);
-    case "DELETE":
+    case 'DELETE':
       return red(method);
     default:
       return gray(method);
@@ -43,43 +41,44 @@ function colorResponseTime(responseTime: number) {
   return green(`${responseTime}ms`);
 }
 
-export const pretty = () =>
-  pinoPretty({
-    colorize: true,
-    messageFormat(log, messageKey) {
-      let msg = `${log[messageKey] ?? ""}`;
+export const prettyOptions: PrettyOptions = {
+  colorize: true,
+  messageFormat(log, messageKey) {
+    let msg = `${log[messageKey] ?? ''}`;
 
-      if (log["ns"]) {
-        msg = `${yellow(`[${log['ns']}]`)} ${msg}`;
-      }
+    if (log['ns']) {
+      msg = `${yellow(`[${log['ns']}]`)} ${msg}`;
+    }
 
-      if (log["req"]) {
-        const req = log["req"] as PinoReq;
-        const res = log["res"] as PinoRes;
-        const responseTime = log["responseTime"];
+    if (log['req']) {
+      const req = log['req'] as PinoReq;
+      const res = log['res'] as PinoRes;
+      const responseTime = log['responseTime'];
 
-        const reqPrefix = `${colorMethod(req.method)} ${req.originalUrl}`;
-        let reqMessage = `ReqId: ${req.id}`;
-        if(req.shop) {
-          reqMessage += ` | ${req.shop}`;
+      const reqPrefix = `${colorMethod(req.method)} ${req.originalUrl}`;
+      let reqMessage = `ReqId: ${req.id}`;
+      if (req.shop) {
+        reqMessage += ` | ${req.shop}`;
 
-          if(req.app) {
-            reqMessage += ` / ${req.app}`
-          }
-        }
-
-        if (res) {
-          let resPrefix = `${colorStatusCode(res.statusCode)}`;
-          if (responseTime) {
-            resPrefix += ` ${colorResponseTime(Number(responseTime))}`;
-          }
-          msg = `⬅️ ${reqPrefix} | ${resPrefix}  - ${reqMessage}`;
-        } else {
-          msg = `➡️ ${reqPrefix} - ${reqMessage}`;
+        if (req.app) {
+          reqMessage += ` / ${req.app}`;
         }
       }
 
-      return msg;
-    },
-    ignore: "ns,req,res,responseTime",
-  });
+      if (res) {
+        let resPrefix = `${colorStatusCode(res.statusCode)}`;
+        if (responseTime) {
+          resPrefix += ` ${colorResponseTime(Number(responseTime))}`;
+        }
+        msg = `⬅️ ${reqPrefix} | ${resPrefix} - ${reqMessage}`;
+      } else {
+        msg = `➡️ ${reqPrefix} - ${reqMessage}`;
+      }
+    }
+
+    return msg;
+  },
+  ignore: 'ns,req,res,responseTime',
+};
+
+export const pretty = () => pinoPretty(prettyOptions);
