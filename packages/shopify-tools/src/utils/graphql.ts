@@ -94,12 +94,28 @@ export function parseValues(
     const key = variableDefinition.variable.name.value;
     const defaultValue = variableDefinition.defaultValue as ConstValueNode | undefined;
 
-    if (values[key]) {
+    // TODO: Look into graphql utils
+    /**
+     * const val = astFromValue(
+        {
+          foo: 'bar',
+          baz: false,
+        },
+        typeFromAST(operation.variableDefinitions[0].type)
+     */
+
+    if (values[key] !== undefined && values[key] !== null) {
       acc[key] = parseValue(values[key]);
-    } else if (defaultValue) {
-      acc[key] = defaultValue;
     } else {
-      missingVariables.add(key);
+      if (defaultValue) {
+        acc[key] = defaultValue;
+      } else {
+        if (variableDefinition.type.kind === Kind.NON_NULL_TYPE) {
+          missingVariables.add(key);
+        } else {
+          acc[key] = parseValue(values[key]);
+        }
+      }
     }
 
     unusedVariable.delete(key);
