@@ -1,3 +1,15 @@
+## 2.7.4 (2024-07-05)
+
+
+### 🩹 Fixes
+
+- yield nothing of bulk operation returns nothing ([8f6b0bc](https://github.com/iwillcodeit/shopify-tools/commit/8f6b0bc))
+
+
+### ❤️  Thank You
+
+- Octanium
+
 ## 2.7.3 (2024-06-10)
 
 This was a version bump only for shopify-tools to align it with other projects, there were no code changes.
