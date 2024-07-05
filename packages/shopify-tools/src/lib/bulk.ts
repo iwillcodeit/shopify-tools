@@ -1,18 +1,19 @@
-import { nanoid } from 'nanoid';
+import type { AllOperations, ApiClient } from '@shopify/graphql-client';
 import Debug from 'debug';
-import { createInterface } from 'node:readline';
-import { createReadStream } from 'node:fs';
-import { Writable } from 'node:stream';
-import { unlinkMaybe } from '../utils/fs';
-import { BULK_MUTATION, BULK_QUERY } from '../graphql/queries';
-import type { RunBulkQueryMutation, RunBulkQueryMutationVariables } from '../types/admin.types';
-import type { DeepMutable } from '../types';
-import type { AllOperations, ApiClient, ReturnData } from '@shopify/graphql-client';
-import { AllClientOperations, PickOperationVariables } from '../types/shopify';
-import { Kind, print, parse } from 'graphql';
+import { Kind, parse, print } from 'graphql';
 import type { DocumentNode, OperationDefinitionNode } from 'graphql/language/ast';
-import { applyVariables, parseValues } from '../utils/graphql';
+import { nanoid } from 'nanoid';
+import { createReadStream } from 'node:fs';
+import { createInterface } from 'node:readline';
+import { Writable } from 'node:stream';
+import { EmptyBulkError } from '../errors/EmptyObjectError';
+import { BULK_MUTATION, BULK_QUERY } from '../graphql/queries';
+import type { DeepMutable } from '../types';
+import type { RunBulkQueryMutation, RunBulkQueryMutationVariables } from '../types/admin.types';
+import { AllClientOperations, PickOperationVariables } from '../types/shopify';
 import { createStagedUpload, fetchStreamToFile, verifyResult, waitBulkOperation } from '../utils/bulk';
+import { unlinkMaybe } from '../utils/fs';
+import { applyVariables, parseValues } from '../utils/graphql';
 
 const debug = Debug('shopify-tools:bulk');
 
@@ -146,7 +147,14 @@ export async function* bulkQuery<
     const result = await runBulkQuery(client, query, operationPath);
     debug('Finished bulk %s', operationId);
 
-    verifyResult(result);
+    try {
+      verifyResult(result);
+    } catch (err) {
+      if (err instanceof EmptyBulkError) {
+        return;
+      }
+      throw err;
+    }
 
     debug('Creating read interface for bulk %s', operationId);
     const rl = createInterface({
@@ -239,7 +247,14 @@ export async function* bulkMutate<
     debug('Executing bulk %s', operationId);
     const result = await runBulkMutation(client, mutation, variables, operationPath);
 
-    verifyResult(result);
+    try {
+      verifyResult(result);
+    } catch (err) {
+      if (err instanceof EmptyBulkError) {
+        return;
+      }
+      throw err;
+    }
 
     const rl = createInterface({
       input: createReadStream(operationPath),
