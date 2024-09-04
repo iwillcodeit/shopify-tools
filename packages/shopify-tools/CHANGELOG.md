@@ -1,3 +1,15 @@
+# 3.0.0 (2024-09-04)
+
+
+### 🩹 Fixes
+
+- upload ([b7209df](https://github.com/iwillcodeit/shopify-tools/commit/b7209df))
+
+
+### ❤️  Thank You
+
+- Octanium
+
 ## 3.0.0-0 (2024-09-04)
 
 
