@@ -18,7 +18,7 @@ function parseInput(input: UploadInput): StagedUploadInput {
     filename: input.filename,
     mimeType: input.mimeType,
     resource: input.resource,
-    fileSize: input.value.size,
+    fileSize: input.value.size.toString(),
     httpMethod: 'POST',
   };
 }
