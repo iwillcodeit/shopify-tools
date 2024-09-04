@@ -11,10 +11,8 @@ export const BULK_OPERATION_FRAGMENT = /* GraphQL */ `
 `;
 
 export const CREATE_STAGED_UPLOAD = /* GraphQL */ `
-  mutation CreateStagedUploadForBulk {
-    stagedUploadsCreate(
-      input: { resource: BULK_MUTATION_VARIABLES, filename: "bulk_op_vars", mimeType: "text/jsonl", httpMethod: POST }
-    ) {
+  mutation CreateStagedUpload($input: [StagedUploadInput!]!) {
+    stagedUploadsCreate(input: $input) {
       userErrors {
         field
         message

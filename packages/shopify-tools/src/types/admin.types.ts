@@ -32,19 +32,16 @@ export type BulkOperationErrorCode =
    * The provided operation `query` returned access denied due to missing
    * [access scopes](https://shopify.dev/api/usage/access-scopes).
    * Review the requested object permissions and execute the query as a normal non-bulk GraphQL request to see more details.
-   *
    */
   | 'ACCESS_DENIED'
   /**
    * The operation resulted in partial or incomplete data due to internal server errors during execution.
    * These errors might be intermittent, so you can try performing the same query again.
-   *
    */
   | 'INTERNAL_SERVER_ERROR'
   /**
    * The operation resulted in partial or incomplete data due to query timeouts during execution.
    * In some cases, timeouts can be avoided by modifying your `query` to select fewer fields.
-   *
    */
   | 'TIMEOUT';
 
@@ -55,7 +52,6 @@ export type BulkOperationStatus =
   /**
    * Cancelation has been initiated on the bulk operation. There may be a short delay from when a cancelation
    * starts until the operation is actually canceled.
-   *
    */
   | 'CANCELING'
   /** The bulk operation has successfully completed. */
@@ -67,7 +63,6 @@ export type BulkOperationStatus =
   /**
    * The bulk operation has failed. For information on why the operation failed, use
    * [BulkOperation.errorCode](https://shopify.dev/api/admin-graphql/latest/enums/bulkoperationerrorcode).
-   *
    */
   | 'FAILED'
   /** The bulk operation is runnning. */
@@ -76,7 +71,6 @@ export type BulkOperationStatus =
 /**
  * The three-letter currency codes that represent the world currencies used in stores. These include standard ISO 4217 codes, legacy codes,
  * and non-standard codes.
- *
  */
 export type CurrencyCode =
   /** United Arab Emirates Dirham (AED). */
@@ -426,7 +420,6 @@ export type FulfillmentOrderHoldInput = {
   /**
    * The fulfillment order line items to be placed on hold.
    * If left blank, all line items of the fulfillment order are placed on hold.
-   *
    */
   fulfillmentOrderLineItems?: InputMaybe<Array<FulfillmentOrderLineItemInput>>;
   /** Whether the merchant receives a notification about the fulfillment hold. The default value is `false`. */
@@ -437,10 +430,7 @@ export type FulfillmentOrderHoldInput = {
   reasonNotes?: InputMaybe<Scalars['String']['input']>;
 };
 
-/**
- * The input fields used to include the quantity of the fulfillment order line item that should be fulfilled.
- *
- */
+/** The input fields used to include the quantity of the fulfillment order line item that should be fulfilled. */
 export type FulfillmentOrderLineItemInput = {
   /** The ID of the fulfillment order line item. */
   id: Scalars['ID']['input'];
@@ -448,17 +438,13 @@ export type FulfillmentOrderLineItemInput = {
   quantity: Scalars['Int']['input'];
 };
 
-/**
- * The input fields used to include the line items of a specified fulfillment order that should be fulfilled.
- *
- */
+/** The input fields used to include the line items of a specified fulfillment order that should be fulfilled. */
 export type FulfillmentOrderLineItemsInput = {
   /** The ID of the fulfillment order. */
   fulfillmentOrderId: Scalars['ID']['input'];
   /**
    * The fulfillment order line items to be fulfilled.
    * If left blank, all line items of the fulfillment order will be fulfilled.
-   *
    */
   fulfillmentOrderLineItems?: InputMaybe<Array<FulfillmentOrderLineItemInput>>;
 };
@@ -507,7 +493,6 @@ export type FulfillmentOriginAddressInput = {
  * > If you provide the `url` field, you should provide the `number` field.
  * >
  * > If you provide the `urls` field, you should provide the `numbers` field.
- *
  */
 export type FulfillmentTrackingInput = {
   /**
@@ -527,7 +512,6 @@ export type FulfillmentTrackingInput = {
    * > Send the tracking company name exactly as written in
    * > [the list](https://shopify.dev/api/admin-graphql/latest/objects/FulfillmentTrackingInfo#supported-tracking-companies)
    * > (capitalization matters).
-   *
    */
   company?: InputMaybe<Scalars['String']['input']>;
   /**
@@ -545,7 +529,6 @@ export type FulfillmentTrackingInput = {
    *   Not all tracking carriers are supported, and multiple tracking carriers may use similarly formatted tracking numbers.
    *   This can result in an invalid tracking URL.
    *   It is highly recommended that you send the tracking company and the tracking URL.
-   *
    */
   number?: InputMaybe<Scalars['String']['input']>;
   /**
@@ -569,8 +552,6 @@ export type FulfillmentTrackingInput = {
    *   Not all tracking carriers are supported, and multiple tracking carriers may use similarly formatted tracking numbers.
    *   This can result in an invalid tracking URL.
    *   It is highly recommended that you send the tracking company and the tracking URLs.
-   *
-   *
    */
   numbers?: InputMaybe<Array<Scalars['String']['input']>>;
   /**
@@ -584,7 +565,6 @@ export type FulfillmentTrackingInput = {
    * [RFC 3987](https://datatracker.ietf.org/doc/html/rfc3987)-compliant URI string.
    * For example, `"https://www.myshipping.com/track/?tracknumbers=TRACKING_NUMBER"` is a valid URL.
    * It includes a scheme (`https`) and a host (`myshipping.com`).
-   *
    */
   url?: InputMaybe<Scalars['URL']['input']>;
   /**
@@ -606,7 +586,6 @@ export type FulfillmentTrackingInput = {
    * [RFC 3987](https://datatracker.ietf.org/doc/html/rfc3987)-compliant URI string.
    * For example, `"https://www.myshipping.com/track/?tracknumbers=TRACKING_NUMBER"` is a valid URL.
    * It includes a scheme (`https`) and a host (`myshipping.com`).
-   *
    */
   urls?: InputMaybe<Array<Scalars['URL']['input']>>;
 };
@@ -618,24 +597,18 @@ export type FulfillmentV2Input = {
    * order line items that have to be fulfilled for each fulfillment order.  For any given pair, if the
    * fulfillment order line items are left blank then all the fulfillment order line items of the
    * associated fulfillment order ID will be fulfilled.
-   *
    */
   lineItemsByFulfillmentOrder: Array<FulfillmentOrderLineItemsInput>;
   /**
    * Whether the customer is notified.
    * If `true`, then a notification is sent when the fulfillment is created. The default value is `false`.
-   *
    */
   notifyCustomer?: InputMaybe<Scalars['Boolean']['input']>;
-  /**
-   * Address information about the location from which the order was fulfilled.
-   *
-   */
+  /** Address information about the location from which the order was fulfilled. */
   originAddress?: InputMaybe<FulfillmentOriginAddressInput>;
   /**
    * The fulfillment's tracking information, including a tracking URL, a tracking number,
    * and the company associated with the fulfillment.
-   *
    */
   trackingInfo?: InputMaybe<FulfillmentTrackingInput>;
 };
@@ -658,12 +631,127 @@ export type OrderEditAppliedDiscountInput = {
   percentValue?: InputMaybe<Scalars['Float']['input']>;
 };
 
+/**
+ * The possible HTTP methods that can be used when sending a request to upload a file using information from a
+ * [StagedMediaUploadTarget](https://shopify.dev/api/admin-graphql/latest/objects/StagedMediaUploadTarget).
+ */
+export type StagedUploadHttpMethodType =
+  /** The POST HTTP method. */
+  | 'POST'
+  /** The PUT HTTP method. */
+  | 'PUT';
+
+/** The input fields for generating staged upload targets. */
+export type StagedUploadInput = {
+  /**
+   * The size of the file to upload, in bytes. This is required when the request's resource property is set to
+   * [VIDEO](https://shopify.dev/api/admin-graphql/latest/enums/StagedUploadTargetGenerateUploadResource#value-video)
+   * or [MODEL_3D](https://shopify.dev/api/admin-graphql/latest/enums/StagedUploadTargetGenerateUploadResource#value-model3d).
+   */
+  fileSize?: InputMaybe<Scalars['UnsignedInt64']['input']>;
+  /** The file's name and extension. */
+  filename: Scalars['String']['input'];
+  /**
+   * The HTTP method to be used when sending a request to upload the file using the returned staged
+   * upload target.
+   */
+  httpMethod?: InputMaybe<StagedUploadHttpMethodType>;
+  /** The file's MIME type. */
+  mimeType: Scalars['String']['input'];
+  /** The file's intended Shopify resource type. */
+  resource: StagedUploadTargetGenerateUploadResource;
+};
+
+/** The resource type to receive. */
+export type StagedUploadTargetGenerateUploadResource =
+  /**
+   * Represents bulk mutation variables.
+   *
+   * For example, bulk mutation variables can be used for bulk operations using the
+   * [bulkOperationRunMutation mutation](https://shopify.dev/api/admin-graphql/latest/mutations/bulkOperationRunMutation).
+   */
+  | 'BULK_MUTATION_VARIABLES'
+  /**
+   * An image associated with a collection.
+   *
+   * For example, after uploading an image, you can use the
+   * [collectionUpdate mutation](https://shopify.dev/api/admin-graphql/latest/mutations/collectionUpdate)
+   * to add the image to a collection.
+   */
+  | 'COLLECTION_IMAGE'
+  /**
+   * Represents any file other than HTML.
+   *
+   * For example, after uploading the file, you can add the file to the
+   * [Files page](https://shopify.com/admin/settings/files) in Shopify admin using the
+   * [fileCreate mutation](https://shopify.dev/api/admin-graphql/latest/mutations/fileCreate).
+   */
+  | 'FILE'
+  /**
+   * An image.
+   *
+   * For example, after uploading an image, you can add the image to a product using the
+   * [productCreateMedia mutation](https://shopify.dev/api/admin-graphql/latest/mutations/productCreateMedia)
+   * or to the [Files page](https://shopify.com/admin/settings/files) in Shopify admin using the
+   * [fileCreate mutation](https://shopify.dev/api/admin-graphql/latest/mutations/fileCreate).
+   */
+  | 'IMAGE'
+  /**
+   * A Shopify hosted 3d model.
+   *
+   * For example, after uploading the 3d model, you can add the 3d model to a product using the
+   * [productCreateMedia mutation](https://shopify.dev/api/admin-graphql/latest/mutations/productCreateMedia).
+   */
+  | 'MODEL_3D'
+  /**
+   * An image that's associated with a product.
+   *
+   * For example, after uploading the image, you can add the image to a product using the
+   * [productCreateMedia mutation](https://shopify.dev/api/admin-graphql/latest/mutations/productCreateMedia).
+   */
+  | 'PRODUCT_IMAGE'
+  /**
+   * Represents a label associated with a return.
+   *
+   * For example, once uploaded, this resource can be used to [create a
+   * ReverseDelivery](https://shopify.dev/api/admin-graphql/unstable/mutations/reverseDeliveryCreateWithShipping).
+   */
+  | 'RETURN_LABEL'
+  /**
+   * An image.
+   *
+   * For example, after uploading the image, you can add the image to the
+   * [Files page](https://shopify.com/admin/settings/files) in Shopify admin using the
+   * [fileCreate mutation](https://shopify.dev/api/admin-graphql/latest/mutations/fileCreate).
+   */
+  | 'SHOP_IMAGE'
+  /**
+   * Represents a redirect CSV file.
+   *
+   * Example usage: This resource can be used for creating a
+   * [UrlRedirectImport](https://shopify.dev/api/admin-graphql/2022-04/objects/UrlRedirectImport)
+   * object for use in the
+   * [urlRedirectImportCreate mutation](https://shopify.dev/api/admin-graphql/latest/mutations/urlRedirectImportCreate).
+   */
+  | 'URL_REDIRECT_IMPORT'
+  /**
+   * A Shopify-hosted video.
+   *
+   * For example, after uploading the video, you can add the video to a product using the
+   * [productCreateMedia mutation](https://shopify.dev/api/admin-graphql/latest/mutations/productCreateMedia)
+   * or to the [Files page](https://shopify.com/admin/settings/files) in Shopify admin using the
+   * [fileCreate mutation](https://shopify.dev/api/admin-graphql/latest/mutations/fileCreate).
+   */
+  | 'VIDEO';
+
 export type BulkOperationFragment = { __typename: 'BulkOperation', id: string, status: BulkOperationStatus, errorCode?: BulkOperationErrorCode | null, url?: any | null, objectCount: any, rootObjectCount: any };
 
-export type CreateStagedUploadForBulkMutationVariables = Exact<{ [key: string]: never; }>;
+export type CreateStagedUploadMutationVariables = Exact<{
+  input: Array<StagedUploadInput> | StagedUploadInput;
+}>;
 
 
-export type CreateStagedUploadForBulkMutation = { __typename?: 'Mutation', stagedUploadsCreate?: { __typename?: 'StagedUploadsCreatePayload', userErrors: Array<{ __typename?: 'UserError', field?: Array<string> | null, message: string }>, stagedTargets?: Array<{ __typename?: 'StagedMediaUploadTarget', url?: any | null, resourceUrl?: any | null, parameters: Array<{ __typename?: 'StagedUploadParameter', name: string, value: string }> }> | null } | null };
+export type CreateStagedUploadMutation = { __typename?: 'Mutation', stagedUploadsCreate?: { __typename?: 'StagedUploadsCreatePayload', userErrors: Array<{ __typename?: 'UserError', field?: Array<string> | null, message: string }>, stagedTargets?: Array<{ __typename?: 'StagedMediaUploadTarget', url?: any | null, resourceUrl?: any | null, parameters: Array<{ __typename?: 'StagedUploadParameter', name: string, value: string }> }> | null } | null };
 
 export type RunBulkMutationMutationVariables = Exact<{
   mutation: Scalars['String']['input'];
@@ -685,7 +773,7 @@ export type GetBulkStatusQueryVariables = Exact<{
 }>;
 
 
-export type GetBulkStatusQuery = { __typename?: 'QueryRoot', node?: { __typename: 'AbandonedCheckout' } | { __typename: 'Abandonment' } | { __typename: 'AddAllProductsOperation' } | { __typename: 'AdditionalFee' } | { __typename: 'App' } | { __typename: 'AppCatalog' } | { __typename: 'AppCredit' } | { __typename: 'AppInstallation' } | { __typename: 'AppPurchaseOneTime' } | { __typename: 'AppRevenueAttributionRecord' } | { __typename: 'AppSubscription' } | { __typename: 'AppUsageRecord' } | { __typename: 'BasicEvent' } | { __typename: 'BulkOperation', id: string, status: BulkOperationStatus, errorCode?: BulkOperationErrorCode | null, url?: any | null, objectCount: any, rootObjectCount: any } | { __typename: 'CalculatedOrder' } | { __typename: 'CartTransform' } | { __typename: 'CatalogCsvOperation' } | { __typename: 'Channel' } | { __typename: 'ChannelDefinition' } | { __typename: 'ChannelInformation' } | { __typename: 'CheckoutProfile' } | { __typename: 'Collection' } | { __typename: 'CommentEvent' } | { __typename: 'Company' } | { __typename: 'CompanyAddress' } | { __typename: 'CompanyContact' } | { __typename: 'CompanyContactRole' } | { __typename: 'CompanyContactRoleAssignment' } | { __typename: 'CompanyLocation' } | { __typename: 'CompanyLocationCatalog' } | { __typename: 'Customer' } | { __typename: 'CustomerPaymentMethod' } | { __typename: 'CustomerSegmentMembersQuery' } | { __typename: 'CustomerVisit' } | { __typename: 'DeliveryCarrierService' } | { __typename: 'DeliveryCondition' } | { __typename: 'DeliveryCountry' } | { __typename: 'DeliveryCustomization' } | { __typename: 'DeliveryLocationGroup' } | { __typename: 'DeliveryMethod' } | { __typename: 'DeliveryMethodDefinition' } | { __typename: 'DeliveryParticipant' } | { __typename: 'DeliveryProfile' } | { __typename: 'DeliveryProfileItem' } | { __typename: 'DeliveryProvince' } | { __typename: 'DeliveryRateDefinition' } | { __typename: 'DeliveryZone' } | { __typename: 'DiscountAutomaticBxgy' } | { __typename: 'DiscountAutomaticNode' } | { __typename: 'DiscountCodeNode' } | { __typename: 'DiscountNode' } | { __typename: 'DiscountRedeemCodeBulkCreation' } | { __typename: 'Domain' } | { __typename: 'DraftOrder' } | { __typename: 'DraftOrderLineItem' } | { __typename: 'DraftOrderTag' } | { __typename: 'Duty' } | { __typename: 'ExchangeV2' } | { __typename: 'ExternalVideo' } | { __typename: 'Fulfillment' } | { __typename: 'FulfillmentEvent' } | { __typename: 'FulfillmentLineItem' } | { __typename: 'FulfillmentOrder' } | { __typename: 'FulfillmentOrderDestination' } | { __typename: 'FulfillmentOrderLineItem' } | { __typename: 'FulfillmentOrderMerchantRequest' } | { __typename: 'GenericFile' } | { __typename: 'GiftCard' } | { __typename: 'InventoryAdjustmentGroup' } | { __typename: 'InventoryItem' } | { __typename: 'InventoryLevel' } | { __typename: 'LineItem' } | { __typename: 'LineItemMutable' } | { __typename: 'Location' } | { __typename: 'MailingAddress' } | { __typename: 'Market' } | { __typename: 'MarketCatalog' } | { __typename: 'MarketRegionCountry' } | { __typename: 'MarketWebPresence' } | { __typename: 'MarketingActivity' } | { __typename: 'MarketingEvent' } | { __typename: 'MediaImage' } | { __typename: 'Metafield' } | { __typename: 'MetafieldDefinition' } | { __typename: 'MetafieldStorefrontVisibility' } | { __typename: 'Metaobject' } | { __typename: 'MetaobjectDefinition' } | { __typename: 'Model3d' } | { __typename: 'OnlineStoreArticle' } | { __typename: 'OnlineStoreBlog' } | { __typename: 'OnlineStorePage' } | { __typename: 'Order' } | { __typename: 'OrderDisputeSummary' } | { __typename: 'OrderTransaction' } | { __typename: 'PaymentCustomization' } | { __typename: 'PaymentMandate' } | { __typename: 'PaymentSchedule' } | { __typename: 'PaymentTerms' } | { __typename: 'PaymentTermsTemplate' } | { __typename: 'PriceList' } | { __typename: 'PriceRule' } | { __typename: 'PriceRuleDiscountCode' } | { __typename: 'PrivateMetafield' } | { __typename: 'Product' } | { __typename: 'ProductFeed' } | { __typename: 'ProductOption' } | { __typename: 'ProductTaxonomyNode' } | { __typename: 'ProductVariant' } | { __typename: 'ProductVariantComponent' } | { __typename: 'Publication' } | { __typename: 'PublicationResourceOperation' } | { __typename: 'Refund' } | { __typename: 'Return' } | { __typename: 'ReturnLineItem' } | { __typename: 'ReturnableFulfillment' } | { __typename: 'ReverseDelivery' } | { __typename: 'ReverseDeliveryLineItem' } | { __typename: 'ReverseFulfillmentOrder' } | { __typename: 'ReverseFulfillmentOrderDisposition' } | { __typename: 'ReverseFulfillmentOrderLineItem' } | { __typename: 'SaleAdditionalFee' } | { __typename: 'SavedSearch' } | { __typename: 'ScriptTag' } | { __typename: 'Segment' } | { __typename: 'SellingPlan' } | { __typename: 'SellingPlanGroup' } | { __typename: 'ServerPixel' } | { __typename: 'ShippingLabel' } | { __typename: 'Shop' } | { __typename: 'ShopAddress' } | { __typename: 'ShopPolicy' } | { __typename: 'ShopifyPaymentsAccount' } | { __typename: 'ShopifyPaymentsBankAccount' } | { __typename: 'ShopifyPaymentsDispute' } | { __typename: 'ShopifyPaymentsDisputeEvidence' } | { __typename: 'ShopifyPaymentsDisputeFileUpload' } | { __typename: 'ShopifyPaymentsDisputeFulfillment' } | { __typename: 'ShopifyPaymentsPayout' } | { __typename: 'ShopifyPaymentsVerification' } | { __typename: 'StaffMember' } | { __typename: 'StandardMetafieldDefinitionTemplate' } | { __typename: 'StorefrontAccessToken' } | { __typename: 'SubscriptionBillingAttempt' } | { __typename: 'SubscriptionContract' } | { __typename: 'SubscriptionDraft' } | { __typename: 'TenderTransaction' } | { __typename: 'TransactionFee' } | { __typename: 'UrlRedirect' } | { __typename: 'UrlRedirectImport' } | { __typename: 'Video' } | { __typename: 'WebPixel' } | { __typename: 'WebhookSubscription' } | null };
+export type GetBulkStatusQuery = { __typename?: 'QueryRoot', node?: { __typename: 'AbandonedCheckout' } | { __typename: 'Abandonment' } | { __typename: 'AddAllProductsOperation' } | { __typename: 'AdditionalFee' } | { __typename: 'App' } | { __typename: 'AppCatalog' } | { __typename: 'AppCredit' } | { __typename: 'AppInstallation' } | { __typename: 'AppPurchaseOneTime' } | { __typename: 'AppRevenueAttributionRecord' } | { __typename: 'AppSubscription' } | { __typename: 'AppUsageRecord' } | { __typename: 'BasicEvent' } | { __typename: 'BulkOperation', id: string, status: BulkOperationStatus, errorCode?: BulkOperationErrorCode | null, url?: any | null, objectCount: any, rootObjectCount: any } | { __typename: 'CalculatedOrder' } | { __typename: 'CartTransform' } | { __typename: 'CatalogCsvOperation' } | { __typename: 'Channel' } | { __typename: 'ChannelDefinition' } | { __typename: 'ChannelInformation' } | { __typename: 'CheckoutProfile' } | { __typename: 'Collection' } | { __typename: 'CommentEvent' } | { __typename: 'Company' } | { __typename: 'CompanyAddress' } | { __typename: 'CompanyContact' } | { __typename: 'CompanyContactRole' } | { __typename: 'CompanyContactRoleAssignment' } | { __typename: 'CompanyLocation' } | { __typename: 'CompanyLocationCatalog' } | { __typename: 'Customer' } | { __typename: 'CustomerPaymentMethod' } | { __typename: 'CustomerSegmentMembersQuery' } | { __typename: 'CustomerVisit' } | { __typename: 'DeliveryCarrierService' } | { __typename: 'DeliveryCondition' } | { __typename: 'DeliveryCountry' } | { __typename: 'DeliveryCustomization' } | { __typename: 'DeliveryLocationGroup' } | { __typename: 'DeliveryMethod' } | { __typename: 'DeliveryMethodDefinition' } | { __typename: 'DeliveryParticipant' } | { __typename: 'DeliveryProfile' } | { __typename: 'DeliveryProfileItem' } | { __typename: 'DeliveryProvince' } | { __typename: 'DeliveryRateDefinition' } | { __typename: 'DeliveryZone' } | { __typename: 'DiscountAutomaticBxgy' } | { __typename: 'DiscountAutomaticNode' } | { __typename: 'DiscountCodeNode' } | { __typename: 'DiscountNode' } | { __typename: 'DiscountRedeemCodeBulkCreation' } | { __typename: 'Domain' } | { __typename: 'DraftOrder' } | { __typename: 'DraftOrderLineItem' } | { __typename: 'DraftOrderTag' } | { __typename: 'Duty' } | { __typename: 'ExchangeV2' } | { __typename: 'ExternalVideo' } | { __typename: 'Fulfillment' } | { __typename: 'FulfillmentConstraintRule' } | { __typename: 'FulfillmentEvent' } | { __typename: 'FulfillmentLineItem' } | { __typename: 'FulfillmentOrder' } | { __typename: 'FulfillmentOrderDestination' } | { __typename: 'FulfillmentOrderLineItem' } | { __typename: 'FulfillmentOrderMerchantRequest' } | { __typename: 'GenericFile' } | { __typename: 'GiftCard' } | { __typename: 'InventoryAdjustmentGroup' } | { __typename: 'InventoryItem' } | { __typename: 'InventoryLevel' } | { __typename: 'LineItem' } | { __typename: 'LineItemMutable' } | { __typename: 'Location' } | { __typename: 'MailingAddress' } | { __typename: 'Market' } | { __typename: 'MarketCatalog' } | { __typename: 'MarketRegionCountry' } | { __typename: 'MarketWebPresence' } | { __typename: 'MarketingActivity' } | { __typename: 'MarketingEvent' } | { __typename: 'MediaImage' } | { __typename: 'Metafield' } | { __typename: 'MetafieldDefinition' } | { __typename: 'MetafieldStorefrontVisibility' } | { __typename: 'Metaobject' } | { __typename: 'MetaobjectDefinition' } | { __typename: 'Model3d' } | { __typename: 'OnlineStoreArticle' } | { __typename: 'OnlineStoreBlog' } | { __typename: 'OnlineStorePage' } | { __typename: 'Order' } | { __typename: 'OrderDisputeSummary' } | { __typename: 'OrderTransaction' } | { __typename: 'PaymentCustomization' } | { __typename: 'PaymentMandate' } | { __typename: 'PaymentSchedule' } | { __typename: 'PaymentTerms' } | { __typename: 'PaymentTermsTemplate' } | { __typename: 'PriceList' } | { __typename: 'PriceRule' } | { __typename: 'PriceRuleDiscountCode' } | { __typename: 'PrivateMetafield' } | { __typename: 'Product' } | { __typename: 'ProductFeed' } | { __typename: 'ProductOption' } | { __typename: 'ProductTaxonomyNode' } | { __typename: 'ProductVariant' } | { __typename: 'ProductVariantComponent' } | { __typename: 'Publication' } | { __typename: 'PublicationResourceOperation' } | { __typename: 'QuantityPriceBreak' } | { __typename: 'Refund' } | { __typename: 'Return' } | { __typename: 'ReturnLineItem' } | { __typename: 'ReturnableFulfillment' } | { __typename: 'ReverseDelivery' } | { __typename: 'ReverseDeliveryLineItem' } | { __typename: 'ReverseFulfillmentOrder' } | { __typename: 'ReverseFulfillmentOrderDisposition' } | { __typename: 'ReverseFulfillmentOrderLineItem' } | { __typename: 'SaleAdditionalFee' } | { __typename: 'SavedSearch' } | { __typename: 'ScriptTag' } | { __typename: 'Segment' } | { __typename: 'SellingPlan' } | { __typename: 'SellingPlanGroup' } | { __typename: 'ServerPixel' } | { __typename: 'ShippingLabel' } | { __typename: 'Shop' } | { __typename: 'ShopAddress' } | { __typename: 'ShopPolicy' } | { __typename: 'ShopifyPaymentsAccount' } | { __typename: 'ShopifyPaymentsBankAccount' } | { __typename: 'ShopifyPaymentsDispute' } | { __typename: 'ShopifyPaymentsDisputeEvidence' } | { __typename: 'ShopifyPaymentsDisputeFileUpload' } | { __typename: 'ShopifyPaymentsDisputeFulfillment' } | { __typename: 'ShopifyPaymentsPayout' } | { __typename: 'ShopifyPaymentsVerification' } | { __typename: 'StaffMember' } | { __typename: 'StandardMetafieldDefinitionTemplate' } | { __typename: 'StorefrontAccessToken' } | { __typename: 'SubscriptionBillingAttempt' } | { __typename: 'SubscriptionContract' } | { __typename: 'SubscriptionDraft' } | { __typename: 'TenderTransaction' } | { __typename: 'TransactionFee' } | { __typename: 'UrlRedirect' } | { __typename: 'UrlRedirectImport' } | { __typename: 'Video' } | { __typename: 'WebPixel' } | { __typename: 'WebhookSubscription' } | null };
 
 export type UpdateTrackingInfoMutationVariables = Exact<{
   fulfillmentId: Scalars['ID']['input'];
@@ -803,4 +891,4 @@ export type GetOrdersFulfillmentsQueryVariables = Exact<{
 }>;
 
 
-export type GetOrdersFulfillmentsQuery = { __typename?: 'QueryRoot', fulfillmentOrder?: { __typename?: 'FulfillmentOrder', id: string, status: FulfillmentOrderStatus, fulfillmentHolds: Array<{ __typename?: 'FulfillmentHold', reason: FulfillmentHoldReason, reasonNotes?: string | null }>, fulfillments: { __typename?: 'FulfillmentConnection', edges: Array<{ __typename?: 'FulfillmentEdge', node: { __typename?: 'Fulfillment', id: string, trackingInfo: Array<{ __typename?: 'FulfillmentTrackingInfo', company?: string | null, number?: string | null, url?: any | null }>, fulfillmentLineItems: { __typename?: 'FulfillmentLineItemConnection', edges: Array<{ __typename?: 'FulfillmentLineItemEdge', node: { __typename?: 'FulfillmentLineItem', id: string, quantity?: number | null, lineItem: { __typename?: 'LineItem', id: string } } }> } } }> } } | null };
+export type GetOrdersFulfillmentsQuery = { __typename?: 'QueryRoot', fulfillmentOrder?: { __typename?: 'FulfillmentOrder', id: string, status: FulfillmentOrderStatus, fulfillmentHolds: Array<{ __typename?: 'FulfillmentHold', reason: FulfillmentHoldReason, reasonNotes?: string | null }>, fulfillments: { __typename?: 'FulfillmentConnection', edges: Array<{ __typename?: 'FulfillmentEdge', node: { __typename?: 'Fulfillment', id: string, trackingInfo: Array<{ __typename?: 'FulfillmentTrackingInfo', company?: string | null, number?: string | null, url?: any | null }> } }> } } | null };

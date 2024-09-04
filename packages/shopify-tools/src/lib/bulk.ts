@@ -11,7 +11,7 @@ import { BULK_MUTATION, BULK_QUERY } from '../graphql/queries';
 import type { DeepMutable } from '../types';
 import type { RunBulkQueryMutation, RunBulkQueryMutationVariables } from '../types/admin.types';
 import { AllClientOperations, PickOperationVariables } from '../types/shopify';
-import { createStagedUpload, fetchStreamToFile, verifyResult, waitBulkOperation } from '../utils/bulk';
+import { createBulkMutationStagedUpload, fetchStreamToFile, verifyResult, waitBulkOperation } from '../utils/bulk';
 import { unlinkMaybe } from '../utils/fs';
 import { applyVariables, parseValues } from '../utils/graphql';
 
@@ -178,7 +178,7 @@ export async function runBulkMutation<
   Operations extends AllClientOperations<Client> = AllClientOperations<Client>,
   Values extends Record<string, any> | undefined = PickOperationVariables<Operation, Operations>
 >(client: Client, mutation: Operation, variables: Array<Values>, output: string | Writable | null) {
-  const { stagedUploadPath } = await createStagedUpload(client, variables);
+  const { stagedUploadPath } = await createBulkMutationStagedUpload(client, variables);
 
   debug(`Creating bulk operation...`);
 

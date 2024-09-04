@@ -1,14 +1,15 @@
+import type { ApiClient } from '@shopify/graphql-client';
+import Debug from 'debug';
 import { createWriteStream } from 'node:fs';
 import { Readable, Writable } from 'node:stream';
 import { finished } from 'node:stream/promises';
 import { ReadableStream } from 'node:stream/web';
-import { CREATE_STAGED_UPLOAD, GET_BULK_STATUS } from '../graphql/queries';
-import Debug from 'debug';
-import { BulkError, EmptyBulkError } from '../errors/EmptyObjectError';
-import { BulkOperation } from '../types';
 import { sleep } from '.';
+import { BulkError, EmptyBulkError } from '../errors/EmptyObjectError';
+import { GET_BULK_STATUS } from '../graphql/queries';
+import { createStagedUpload } from '../lib/upload';
+import { BulkOperation } from '../types';
 import type { GetBulkStatusQuery, GetBulkStatusQueryVariables } from '../types/admin.types';
-import type { ApiClient } from '@shopify/graphql-client';
 
 const debug = Debug('shopify-tools:bulk');
 
@@ -67,62 +68,35 @@ export async function waitBulkOperation<Client extends ApiClient<any, any> = Api
   return bulkOperation;
 }
 
-export async function createStagedUpload<
+export async function createBulkMutationStagedUpload<
   Data = Record<string, unknown>,
   Client extends ApiClient<any, any> = ApiClient
 >(client: Client, variables: Data[]) {
-  // Initialize bulk variables upload
   debug(`Creating new bulk mutation. Creating variable upload`);
-  const { data, errors } = await client.request(CREATE_STAGED_UPLOAD);
-
-  if (errors) {
-    throw new Error('Failed to create staged upload', { cause: errors });
-  }
-
-  const stagedUploadsCreate = data?.stagedUploadsCreate;
-
-  if (!stagedUploadsCreate) {
-    throw new Error('Failed to create staged upload');
-  }
 
   const variablesStr = variables.map((v) => JSON.stringify(v)).join('\r\n');
-  const target = stagedUploadsCreate.stagedTargets?.[0];
+
+  const data = await createStagedUpload(client, {
+    filename: 'bulk_op_vars',
+    mimeType: 'text/jsonl',
+    resource: 'BULK_MUTATION_VARIABLES',
+    value: new Blob([variablesStr]),
+  });
+
+  const target = data?.stagedTargets?.[0];
 
   if (!target) {
     throw new Error('Failed to create staged upload: no target');
   }
-  if (!target.url) {
-    throw new Error('Failed to create staged upload: no target url');
-  }
 
-  debug(`Created file upload URL.`);
-
-  const form = new FormData();
   let stagedUploadPath;
-  // TODO: find the type of this
   target.parameters.forEach(({ name, value }: any) => {
     if (name === 'key') {
       stagedUploadPath = value;
     }
-    form.append(name, value);
   });
-  form.append('file', new Blob([variablesStr]), '/tmp/variables.jsonl');
-
-  if (!stagedUploadPath) {
-    throw new Error('Missing stagedUploadPath');
-  }
-
-  debug(`Uploading mutation variables.`);
-
-  const res = await fetch(target.url, {
-    method: 'POST',
-    body: form,
-  });
-
-  if (!res.ok || res.status >= 400) {
-    throw new Error(`Failed to upload bulk operation variables with status ${res.status}:\n${await res.text()}`);
-  }
 
   debug(`Uploaded mutation variables.`);
+
   return { stagedUploadPath };
 }
