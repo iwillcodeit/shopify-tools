@@ -1,3 +1,15 @@
+## 3.0.0-0 (2024-09-04)
+
+
+### 🚀 Features
+
+- improve staged upload' ([061a076](https://github.com/iwillcodeit/shopify-tools/commit/061a076))
+
+
+### ❤️  Thank You
+
+- Octanium
+
 ## 2.7.4 (2024-07-05)
 
 
